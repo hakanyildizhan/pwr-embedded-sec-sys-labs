@@ -59,7 +59,7 @@
       <GenerateDebugInformation>true</GenerateDebugInformation>
     </Link>
     <PreBuildEvent>
-      <Command>cp -u ..\..\src\Sketch.ino ArduinoVS\Sketch.h</Command>
+      <Command>cp -u ..\..\Sketch\Sketch.ino ArduinoVS\Sketch.h</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">

@@ -190,4 +190,3 @@ void encryptMessage()
         messageToSendEncrypted[i] = messageToSend[i] ^ keyStream[i];
     }
 }
-
