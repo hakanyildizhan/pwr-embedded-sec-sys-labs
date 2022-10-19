@@ -25,3 +25,4 @@ ipch
 
 # Misc
 *.bak
+/List2/VisualStudioProject/ArduinoVS.UnitTest/ArduinoVS.UnitTest.vcxproj.user

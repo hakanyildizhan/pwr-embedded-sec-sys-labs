@@ -21,7 +21,7 @@
     <ClCompile Include="Application.cpp">
       <Filter>Additional Files</Filter>
     </ClCompile>
-    <ClCompile Include="libraries\ABC.cpp">
+    <ClCompile Include="libraries\Abirc.cpp">
       <Filter>Arduino Sketch\libraries\ABC</Filter>
     </ClCompile>
     <ClCompile Include="libraries\A51Cipher.cpp">
@@ -41,7 +41,7 @@
     <ClInclude Include="ArduinoVS\Sketch.h">
       <Filter>Arduino Sketch</Filter>
     </ClInclude>
-    <ClInclude Include="libraries\ABC.h">
+    <ClInclude Include="libraries\Abirc.h">
       <Filter>Arduino Sketch\libraries\ABC</Filter>
     </ClInclude>
     <ClInclude Include="libraries\A51Cipher.h">

@@ -1,18 +1,8 @@
 #include "Arduino.h"
-#include "A51Cipher.h"
 #include <cores/arduino/WString.h>
 #include <cores/arduino/Print.h>
-
-bool initialized;
-bool key[64];
-bool frame[22];
-bool r1[19];
-bool r2[22];
-bool r3[23];
-const byte r1SpecialBit = 8;
-const byte r2r3SpecialBit = 10;
-bool messageToSendEncrypted[114];
-bool messageReceived[114];
+#ifndef A51Cipher_h  
+#include "A51Cipher.h"
 
 A51Cipher::A51Cipher()
 {
@@ -22,25 +12,45 @@ A51Cipher::A51Cipher()
 void A51Cipher::initialize()
 {
     initialized = false;
+    isMaster = true;
+    keyAndFrameInitialized = false;
     memset(key, false, sizeof(key));
     memset(frame, false, sizeof(frame));
     memset(r1, false, sizeof(r1));
     memset(r2, false, sizeof(r2));
     memset(r3, false, sizeof(r3));
-    memset(messageToSendEncrypted, false, sizeof(messageToSendEncrypted));
+    memset(cipherKey, false, sizeof(cipherKey));
     initialized = true;
 }
 
-bool* A51Cipher::createCipherKey(bool keyStream[228])
+void A51Cipher::initialize(bool cipherKey[64], bool additionalFrame[22])
+{
+    initialized = false;
+    keyAndFrameInitialized = false;
+    isMaster = false;
+    memcpy(key, cipherKey, 64);
+    memcpy(frame, additionalFrame, 22);
+    keyAndFrameInitialized = true;
+    memset(r1, false, sizeof(r1));
+    memset(r2, false, sizeof(r2));
+    memset(r3, false, sizeof(r3));
+    memset(cipherKey, false, sizeof(cipherKey));
+    initialized = true;
+}
+
+void A51Cipher::createCipherKey(bool keyStream[228])
 {
     if (!initialized)
     {
         initialize();
     }
-    generateKeyAndFrame();
+    if (!keyAndFrameInitialized)
+    {
+        generateKeyAndFrame();
+    }
     phaseOne();
     memset(keyStream, false, sizeof(keyStream));
-    return phaseTwo(keyStream);
+    phaseTwo(keyStream);
 }
 
 void A51Cipher::generateKeyAndFrame()
@@ -113,7 +123,7 @@ void A51Cipher::phaseOne()
     }
 }
 
-bool* A51Cipher::phaseTwo(bool keyStream[228])
+void A51Cipher::phaseTwo(bool keyStream[228])
 {
     for (int i = 0; i < 100; i++)
     {
@@ -188,34 +198,61 @@ bool* A51Cipher::phaseTwo(bool keyStream[228])
         bool tobeAddedToKeystream = r1[sizeof(r1) - 1] ^ r2[sizeof(r2) - 1] ^ r3[sizeof(r3) - 1];
         keyStream[i] = tobeAddedToKeystream;
     }
-    return keyStream;
 }
 
-bool* A51Cipher::encryptMessage(bool encryptionCypher[114], char message[], bool encryptedMessage[])
+bool* A51Cipher::encryptMessage(char message[], bool encryptedMessage[])
 {
     bool* binaryMessage = (bool*)malloc(sizeof(bool) * (sizeof(message) * 8));
     memset(binaryMessage, false, sizeof(binaryMessage));
 
     for (int i = 0; i < sizeof(message); i++)
     {
-        char character = message[i];
-
-        for (int j = 7; j >= 0; j--)
+        for (int j = 0; j < 8; j++)
         {
-            binaryMessage[i*8+(7-j)] = bitRead(character, j) == 1;
+            binaryMessage[i*8+7-j] = bitRead(message[i], j) == 1;
         }
     }
 
+    /*char
+    for (int i = 0; i < 32; i++) {
+        printf("%d, ", binaryMessage[i]);
+    }*/
+
     for (int i = 0; i < sizeof(encryptedMessage); i++)
     {
-        encryptedMessage[i] = binaryMessage[i] ^ encryptionCypher[i%114];
+        //encryptedMessage[i] = binaryMessage[i] ^ (isMaster ? cipherKey[i%114] : cipherKey[(i % 114)+114]);
+        encryptedMessage[i] = binaryMessage[i] ^ cipherKey[i % 228];
     }
 
     free(binaryMessage);
     return encryptedMessage;
 }
 
-char* A51Cipher::decryptMessage(bool decryptionCypher[114], bool encryptedMessage[], char message[])
+char* A51Cipher::decryptMessage(bool encryptedMessage[], int inputLength, char message[])
 {
+    //char* decryptedMessage = (char*)malloc(sizeof(char) * (sizeof(encryptedMessage) / 8));
+    memset(encryptedMessage, false, inputLength);
 
+    for (int i = 0; i < inputLength; i++)
+    {
+        //encryptedMessage[i] = encryptedMessage[i] ^ (isMaster ? cipherKey[i % 114] : cipherKey[(i % 114) + 114]);
+        encryptedMessage[i] = encryptedMessage[i] ^ cipherKey[i % 228];
+    }
+
+    for (int i = 0; i < inputLength; i+=8)
+    {
+        byte bits[8];
+        for (int j = 0; j < 8; j++)
+        {
+            bits[j] = encryptedMessage[i + j] ? 1 : 0;
+        }
+        char* character = (char*)bits;
+        strcat(message, character);
+        //message[i % 8] = character;
+    }
+
+    //free(decryptedMessage);
+    return message;
 }
+
+#endif

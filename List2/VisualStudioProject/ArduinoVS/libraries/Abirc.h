@@ -1,11 +1,11 @@
 #pragma once
-#ifndef ABC_h
-#define ABC_h
+#ifndef Abirc_h
+#define Abirc_h
 
-class ABC
+class Abirc
 {
     public:
-        ABC(int pin);
+        Abirc(int pin);
         void dot();
         void dash();
     private:

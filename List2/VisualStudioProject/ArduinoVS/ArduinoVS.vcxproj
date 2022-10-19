@@ -72,6 +72,8 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;NDEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>true</ConformanceMode>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)libraries;%(AdditionalIncludeDirectories)
+			</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -83,7 +85,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="libraries\A51Cipher.cpp" />
-    <ClCompile Include="libraries\ABC.cpp" />
+    <ClCompile Include="libraries\Abirc.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ArduinoVS\ArduinoVS.ino" />
@@ -93,7 +95,7 @@
   <ItemGroup>
     <ClInclude Include="ArduinoVS\Sketch.h" />
     <ClInclude Include="libraries\A51Cipher.h" />
-    <ClInclude Include="libraries\ABC.h" />
+    <ClInclude Include="libraries\Abirc.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
