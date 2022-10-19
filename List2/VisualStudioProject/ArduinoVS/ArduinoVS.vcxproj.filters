@@ -7,10 +7,25 @@
     <Filter Include="Additional Files">
       <UniqueIdentifier>{97db2191-99f6-4640-b074-8b5924da4398}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Arduino Sketch\libraries">
+      <UniqueIdentifier>{8b75c0fc-64e6-4563-963d-d7cd7c8b6430}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arduino Sketch\libraries\ABC">
+      <UniqueIdentifier>{5dc26a4b-ad1f-46ca-af8c-2a2ee47603d0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Arduino Sketch\libraries\A51Cipher">
+      <UniqueIdentifier>{c130c70c-b9d4-4bc8-a29f-613416cdd4ff}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp">
       <Filter>Additional Files</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\ABC.cpp">
+      <Filter>Arduino Sketch\libraries\ABC</Filter>
+    </ClCompile>
+    <ClCompile Include="libraries\A51Cipher.cpp">
+      <Filter>Arduino Sketch\libraries\A51Cipher</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -25,6 +40,12 @@
   <ItemGroup>
     <ClInclude Include="ArduinoVS\Sketch.h">
       <Filter>Arduino Sketch</Filter>
+    </ClInclude>
+    <ClInclude Include="libraries\ABC.h">
+      <Filter>Arduino Sketch\libraries\ABC</Filter>
+    </ClInclude>
+    <ClInclude Include="libraries\A51Cipher.h">
+      <Filter>Arduino Sketch\libraries\A51Cipher</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>
