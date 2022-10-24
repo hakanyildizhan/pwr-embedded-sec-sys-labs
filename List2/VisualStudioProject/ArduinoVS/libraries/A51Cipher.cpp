@@ -1,6 +1,4 @@
 #include "Arduino.h"
-#include <cores/arduino/WString.h>
-#include <cores/arduino/Print.h>
 #ifndef A51Cipher_h  
 #include "A51Cipher.h"
 #include <stdexcept>
