@@ -53,7 +53,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)libraries;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)libraries;C:\Users\yildi\AppData\Local\Programs\Arduino IDE\sketchbooks\libraries\IRremote\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
@@ -85,7 +85,7 @@
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
     <ClCompile Include="libraries\A51Cipher.cpp" />
-    <ClCompile Include="libraries\Abirc.cpp" />
+    <ClCompile Include="libraries\STIR.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ArduinoVS\ArduinoVS.ino" />
@@ -95,7 +95,7 @@
   <ItemGroup>
     <ClInclude Include="ArduinoVS\Sketch.h" />
     <ClInclude Include="libraries\A51Cipher.h" />
-    <ClInclude Include="libraries\Abirc.h" />
+    <ClInclude Include="libraries\STIR.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />
