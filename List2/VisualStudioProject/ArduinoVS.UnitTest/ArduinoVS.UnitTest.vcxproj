@@ -95,7 +95,7 @@
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <WarningLevel>Level3</WarningLevel>
       <SDLCheck>true</SDLCheck>
-      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\ArduinoVS\libraries;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>$(MSBuildThisFileDirectory)..\ArduinoVS\libraries;C:\Users\yildi\AppData\Local\Programs\Arduino IDE\sketchbooks\libraries\IRremote\src\;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PreprocessorDefinitions>WIN32;_DEBUG;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <UseFullPaths>true</UseFullPaths>
       <PrecompiledHeaderFile>pch.h</PrecompiledHeaderFile>
@@ -160,7 +160,9 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="..\ArduinoVS\libraries\A51Cipher.cpp" />
-    <ClCompile Include="ArduinoVS.UnitTest.cpp" />
+    <ClCompile Include="..\ArduinoVS\libraries\STIR.cpp" />
+    <ClCompile Include="UnitTestSTIR.cpp" />
+    <ClCompile Include="UnitTestA51Cipher.cpp" />
     <ClCompile Include="pch.cpp">
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|Win32'">Create</PrecompiledHeader>
       <PrecompiledHeader Condition="'$(Configuration)|$(Platform)'=='Debug|x64'">Create</PrecompiledHeader>
@@ -170,6 +172,7 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="..\ArduinoVS\libraries\A51Cipher.h" />
+    <ClInclude Include="..\ArduinoVS\libraries\STIR.h" />
     <ClInclude Include="pch.h" />
   </ItemGroup>
   <ItemGroup>

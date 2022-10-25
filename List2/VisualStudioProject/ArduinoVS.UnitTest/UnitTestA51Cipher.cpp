@@ -11,7 +11,7 @@ using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
 namespace ArduinoVSUnitTest
 {
-	TEST_CLASS(ArduinoVSUnitTest)
+	TEST_CLASS(ArduinoVSUnitTestA51Cipher)
 	{
 	public:
 

@@ -1,22 +1,23 @@
+#include <libraries/A51Cipher.h>
+#include <libraries/STIR.h>
 
-
-bool messageToSend[114];
+A51Cipher cipherLib;
+STIR commLib;
+bool keyStream[228];
 
 void setup()
 {
-    memset(messageToSend, false, sizeof(messageToSend));
+    cipherLib.createCipherKey(keyStream);
+    STIRConfig config(0, 0, 0, 2, 3, ProcessIncoming::WRITETOSERIAL);
+    commLib = STIR(config);
+    commLib.beginListen();
 }
 
 void loop()
 {
-    
-}
-
-void generateMessage()
-{
-    for (int i = 0; i < sizeof(messageToSend); i++)
-    {
-        messageToSend[i] = random(2);
-    }
+    char message[] = "Hello";
+    bool encryptedMessage[40];
+    cipherLib.encryptMessage(message, 5, encryptedMessage);
+    commLib.communicationLoop();
 }
 

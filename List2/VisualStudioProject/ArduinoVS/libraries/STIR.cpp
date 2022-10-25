@@ -1,8 +1,13 @@
 #pragma once
+#ifndef STIR_h
 #include <STIR.h>
-#define USE_IRREMOTE_HPP_AS_PLAIN_INCLUDE
-#include <IRremote.hpp>
+#endif
+//#define USE_IRREMOTE_HPP_AS_PLAIN_INCLUDE
 #define NUMBER_OF_REPEATS 3U
+
+//IRrecv irrecv(2);
+//decode_results results;
+//IRsend irsend;
 
 STIR::STIR(int irReceivePin, int irSendPin)
 {
@@ -53,6 +58,23 @@ void STIR::beginListen()
 	}
 }
 
+void STIR::communicationLoop()
+{
+	// check incoming messages from PC to forward to IR
+	if (Serial.available() > 0) {
+		String messageToForwardStr = Serial.readString();
+		char messageToForward[sizeof(messageToForwardStr)-1];
+		Serial.readString().toCharArray(messageToForward, sizeof(messageToForwardStr) - 1);
+		send(messageToForward);
+	}
+
+	// check incoming messages from IR to forward to PC
+	if (irrecv.decode(&results))
+	{
+		unsigned long res = results.value;
+	}
+}
+
 void STIR::beginListenSerial()
 {
 	if (!serialStarted)
@@ -66,7 +88,11 @@ void STIR::beginListenIR()
 {
 	if (!irStarted)
 	{
-		IrReceiver.begin(pinIRReceive, ENABLE_LED_FEEDBACK);
+		//IrReceiver.begin(pinIRReceive, ENABLE_LED_FEEDBACK);
+		irrecv.enableIRIn();
+		//IRrecv irrecv(2);
+		irrecv = IRrecv(pinIRReceive);
+		//IrSender.setSendPin(pinIRSend);
 		irStarted = true;
 	}
 }
@@ -81,27 +107,26 @@ void STIR::endListen()
 
 	if (irStarted)
 	{
-		IrReceiver.end();
+		//IrReceiver.end();
 		irStarted = false;
 	}
 }
 
-String STIR::receive()
-{
-	// TODO
-}
-
-IRsend irsend;
+//String STIR::receive()
+//{
+//	// TODO
+//
+//}
 
 void STIR::send(char binaryMessage[])
 {
 	char hexMsg[sizeof(binaryMessage)/4];
-	hextobin(binaryMessage).copy(hexMsg, sizeof(binaryMessage) / 4);
-	IrSender.begin(pinIRSend);
-	irsend.sendPronto(hexMsg, NUMBER_OF_REPEATS);
+	convertHexToBin(binaryMessage).copy(hexMsg, sizeof(binaryMessage) / 4);
+	//IrSender.sendPronto(hexMsg, NUMBER_OF_REPEATS);
+	irsend.sendPronto(hexMsg, false, false);
 }
 
-string hextobin(const char s[]) {
+string STIR::convertHexToBin(const char s[]) {
 	string out;
 	for (int i = 0; i < sizeof(s); i++) {
 		byte n;
@@ -116,7 +141,7 @@ string hextobin(const char s[]) {
 	return out;
 }
 
-string bintohex(const string& s) {
+string STIR::convertBinToHex(const string& s) {
 	string out;
 	for (int i = 0; i < s.size(); i += 4) {
 		int n = 0;

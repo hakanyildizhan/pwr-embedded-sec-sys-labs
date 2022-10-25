@@ -1,8 +1,37 @@
 #pragma once
 #ifndef STIR_h
 #define STIR_h
-#include <cores/arduino/WString.h>
+#endif
+
+#ifndef ARDUINO
+#define ARDUINO 10800
+#endif
+
+#ifndef IRremote_h
+#include <IRremote.h>
+#endif
+
+//#ifndef __AVR__
+//#define __AVR__
+//#endif
+//
+//#ifndef __AVR_ATmega328P__
+//#define __AVR_ATmega328P__
+//#endif
+
+
+
 #include <cores/arduino/SerialSimulator.h>
+#ifndef Arduino_h
+#include <Arduino.h>
+#endif
+//#define RAW_BUFFER_LENGTH 100
+//#define IR_SEND_PIN 3
+//#define SEND_PWM_BY_TIMER 4
+
+//#ifndef _IR_SEND_HPP
+//#include <IRSend.hpp>
+//#endif
 
 #define PIN_NOT_SET 0
 const long SERIAL_BAUDRATE = 9600;
@@ -53,6 +82,8 @@ typedef struct STIRConfig
 		sendingLEDPin = sendingLedPin;
 		irReceivePin = receiveIrPin;
 		irSendPin = sendIrPin;
+		#undef IR_SEND_PIN
+		#define IR_SEND_PIN irSendPin
 		incomingMessageProcessing = ProcessIncoming::WRITETOSERIAL;
 		onMessageReceived = doNothing;
 	}
@@ -69,6 +100,8 @@ typedef struct STIRConfig
 		sendingLEDPin = sendingLedPin;
 		irReceivePin = receiveIrPin;
 		irSendPin = sendIrPin;
+		#undef IR_SEND_PIN
+		#define IR_SEND_PIN irSendPin
 		incomingMessageProcessing = messageProcessing;
 		onMessageReceived = doNothing;
 	}
@@ -105,14 +138,13 @@ public:
 	STIR(int irReceivePin, int irSendPin);
 	STIR(STIRConfig config);
 	void send(char binaryMessage[]);
-	String receive();
+	void communicationLoop();
+	//String receive();
 	void beginListen();
 	void endListen();
 	State getState();
 private:
 	State state;
-	void beginListenSerial();
-	void beginListenIR();
 	int pinWaiting;
 	int pinReceiving;
 	int pinSending;
@@ -122,6 +154,12 @@ private:
 	bool initiated;
 	int pinIRReceive;
 	int pinIRSend;
+	void beginListenSerial();
+	void beginListenIR();
+	string convertHexToBin(const char s[]);
+	string convertBinToHex(const string& s);
+	decode_results results;
+	IRsend irsend;
 };
 
-#endif
+IRrecv irrecv(2);

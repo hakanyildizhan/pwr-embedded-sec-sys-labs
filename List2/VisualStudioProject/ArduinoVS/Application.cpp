@@ -1,4 +1,5 @@
 #define ARDUINO 10800
+#define __AVR__
 #define __AVR_ATmega328P__ // Arduino Nano
 
 #include <VirtualBoard.h>

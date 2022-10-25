@@ -19,9 +19,12 @@
     <Filter Include="libraries\A51Cipher">
       <UniqueIdentifier>{73c5c576-ad40-42af-af51-21726c58656f}</UniqueIdentifier>
     </Filter>
+    <Filter Include="libraries\STIR">
+      <UniqueIdentifier>{c889ef20-5dda-45ee-a22a-7229ccddd8d1}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
-    <ClCompile Include="ArduinoVS.UnitTest.cpp">
+    <ClCompile Include="UnitTestA51Cipher.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
     <ClCompile Include="pch.cpp">
@@ -30,6 +33,12 @@
     <ClCompile Include="..\ArduinoVS\libraries\A51Cipher.cpp">
       <Filter>libraries\A51Cipher</Filter>
     </ClCompile>
+    <ClCompile Include="..\ArduinoVS\libraries\STIR.cpp">
+      <Filter>libraries\STIR</Filter>
+    </ClCompile>
+    <ClCompile Include="UnitTestSTIR.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
@@ -37,6 +46,9 @@
     </ClInclude>
     <ClInclude Include="..\ArduinoVS\libraries\A51Cipher.h">
       <Filter>libraries\A51Cipher</Filter>
+    </ClInclude>
+    <ClInclude Include="..\ArduinoVS\libraries\STIR.h">
+      <Filter>libraries\STIR</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
