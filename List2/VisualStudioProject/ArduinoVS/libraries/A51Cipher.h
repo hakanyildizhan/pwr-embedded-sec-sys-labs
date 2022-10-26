@@ -6,6 +6,7 @@ class A51Cipher
 {
 public:
 	A51Cipher();
+	A51Cipher(bool keyStreamInput[228]);
 	void createCipherKey(bool(&keyStream)[228]);
 	void encryptMessage(char message[], int messageSize, bool encryptedMessage[]);
 	void decryptMessage(bool encryptedMessage[], int encryptedMessageSize, char message[]);

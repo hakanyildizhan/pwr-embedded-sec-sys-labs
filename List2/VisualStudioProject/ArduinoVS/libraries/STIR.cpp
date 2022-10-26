@@ -9,6 +9,9 @@
 //decode_results results;
 //IRsend irsend;
 
+IRrecv irrecv(2);
+IRsend irsend;
+
 STIR::STIR(int irReceivePin, int irSendPin)
 {
 	pinWaiting = PIN_NOT_SET;
@@ -62,10 +65,7 @@ void STIR::communicationLoop()
 {
 	// check incoming messages from PC to forward to IR
 	if (Serial.available() > 0) {
-		String messageToForwardStr = Serial.readString();
-		char messageToForward[sizeof(messageToForwardStr)-1];
-		Serial.readString().toCharArray(messageToForward, sizeof(messageToForwardStr) - 1);
-		send(messageToForward);
+		sendString(Serial.readString());
 	}
 
 	// check incoming messages from IR to forward to PC
@@ -118,16 +118,38 @@ void STIR::endListen()
 //
 //}
 
-void STIR::send(char binaryMessage[])
+void STIR::sendString(String message)
 {
-	char hexMsg[sizeof(binaryMessage)/4];
-	convertHexToBin(binaryMessage).copy(hexMsg, sizeof(binaryMessage) / 4);
-	//IrSender.sendPronto(hexMsg, NUMBER_OF_REPEATS);
-	irsend.sendPronto(hexMsg, false, false);
+	char messageArr[50];
+	message.toCharArray(messageArr, message.length()+1);
+	irsend.sendPronto(messageArr, false, false);
 }
 
-string STIR::convertHexToBin(const char s[]) {
-	string out;
+void STIR::sendBinary(bool binaryMessage[])
+{
+	char* hexMessage = convertBinToHexString(binaryMessage);
+	irsend.sendPronto(hexMessage, false, false);
+}
+
+char* STIR::convertBinToHexString(bool bin[])
+{
+	char message[1000];
+	for (int i = 0; i < 1000; i++)
+	{
+		if (bin[i])
+		{
+			message[i] = '1';
+		}
+		else
+		{
+			message[i] = '0';
+		}
+	}
+	return message;
+}
+
+String STIR::convertHexToBin(const char s[]) {
+	String out;
 	for (int i = 0; i < sizeof(s); i++) {
 		byte n;
 		if (s[i] <= '9' && s[i] >= '0')
@@ -135,15 +157,15 @@ string STIR::convertHexToBin(const char s[]) {
 		else
 			n = 10 + s[i] - 'A';
 		for (byte j = 3; j >= 0; --j)
-			out.push_back((n & (1 << j)) ? '1' : '0');
+			out.concat((n & (1 << j)) ? '1' : '0');
 	}
 
 	return out;
 }
 
-string STIR::convertBinToHex(const string& s) {
-	string out;
-	for (int i = 0; i < s.size(); i += 4) {
+String STIR::convertBinToHex(const String& s) {
+	String out;
+	for (int i = 0; i < s.length(); i += 4) {
 		int n = 0;
 		for (int j = i; j < i + 4; ++j) {
 			n <<= 1;
@@ -152,9 +174,9 @@ string STIR::convertBinToHex(const string& s) {
 		}
 
 		if (n <= 9)
-			out.push_back('0' + n);
+			out.concat('0' + n);
 		else
-			out.push_back('A' + n - 10);
+			out.concat('A' + n - 10);
 	}
 
 	return out;

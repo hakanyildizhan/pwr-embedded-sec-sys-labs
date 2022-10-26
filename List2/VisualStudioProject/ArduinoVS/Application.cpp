@@ -8,3 +8,4 @@
 //#include "../../../libraries/RfControl/src/RfControl.cpp"
 
 #include "ArduinoVS/Sketch.h"
+#include <IRremote.h>

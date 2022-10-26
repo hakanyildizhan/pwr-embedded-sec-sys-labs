@@ -1,11 +1,20 @@
 #include "Arduino.h"
 #ifndef A51Cipher_h  
 #include "A51Cipher.h"
-#include <stdexcept>
 
 A51Cipher::A51Cipher()
 {
 	initialize();
+}
+
+A51Cipher::A51Cipher(bool keyStreamInput[228])
+{
+	initialized = true;
+	isMaster = true;
+	keyAndFrameInitialized = true;
+	cipherKeyGenerated = true;
+	memcpy(cipherKey, keyStreamInput, 228);
+	initialized = true;
 }
 
 void A51Cipher::initialize()
@@ -208,7 +217,8 @@ void A51Cipher::encryptMessage(char message[], int messageSize, bool encryptedMe
 {
 	if (!cipherKeyGenerated)
 	{
-		throw std::runtime_error("Cipher key not generated");
+		return;
+		//throw std::runtime_error("Cipher key not generated");
 	}
 
 	bool* binaryMessage = (bool*)malloc(sizeof(bool) * (messageSize * 8));
@@ -234,7 +244,8 @@ void A51Cipher::decryptMessage(bool encryptedMessage[], int encryptedMessageSize
 {
 	if (!cipherKeyGenerated)
 	{
-		throw std::runtime_error("Cipher key not generated");
+		return;
+		//throw std::runtime_error("Cipher key not generated");
 	}
 
 	for (int i = 0; i < encryptedMessageSize; i++)

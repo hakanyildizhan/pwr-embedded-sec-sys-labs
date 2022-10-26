@@ -38,9 +38,9 @@ const long SERIAL_BAUDRATE = 9600;
 
 typedef void* (*EventHandler)(String);
 
-void* doNothing(String message) { return NULL; }
+inline void* doNothing(String message) { return NULL; }
 
-void* writeToSerial(String message)
+inline void* writeToSerial(String message)
 {
 	Serial.print(message);
 	return NULL;
@@ -137,7 +137,8 @@ class STIR
 public:
 	STIR(int irReceivePin, int irSendPin);
 	STIR(STIRConfig config);
-	void send(char binaryMessage[]);
+	void sendBinary(bool binaryMessage[]);
+	void sendString(String message);
 	void communicationLoop();
 	//String receive();
 	void beginListen();
@@ -156,10 +157,8 @@ private:
 	int pinIRSend;
 	void beginListenSerial();
 	void beginListenIR();
-	string convertHexToBin(const char s[]);
-	string convertBinToHex(const string& s);
+	char* convertBinToHexString(bool bin[]);
+	String convertHexToBin(const char s[]);
+	String convertBinToHex(const String& s);
 	decode_results results;
-	IRsend irsend;
 };
-
-IRrecv irrecv(2);
