@@ -55,11 +55,18 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>libraries;C:\Users\yildi\AppData\Local\Programs\Arduino IDE\sketchbooks\libraries\IRremote;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>libraries;$(SolutionDir)\IRRemoteLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <PrecompiledHeader>NotUsing</PrecompiledHeader>
+      <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
+      <CallingConvention>Cdecl</CallingConvention>
+      <AdditionalUsingDirectories>
+      </AdditionalUsingDirectories>
     </ClCompile>
     <Link>
       <SubSystem>Console</SubSystem>
       <GenerateDebugInformation>true</GenerateDebugInformation>
+      <AdditionalLibraryDirectories>%(AdditionalLibraryDirectories)</AdditionalLibraryDirectories>
+      <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
       <Command>cp -u ..\..\Sketch\Sketch.ino ArduinoVS\Sketch.h</Command>
@@ -98,6 +105,11 @@
     <ClInclude Include="ArduinoVS\Sketch.h" />
     <ClInclude Include="libraries\A51Cipher.h" />
     <ClInclude Include="libraries\STIR.h" />
+  </ItemGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\IRRemoteLib\IRRemoteLib.vcxproj">
+      <Project>{4f7d4fc5-f780-432c-b772-024c4ccfec4a}</Project>
+    </ProjectReference>
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />
   <ImportGroup Label="ExtensionTargets" />

@@ -7,31 +7,12 @@
 #define ARDUINO 10800
 #endif
 
-#ifndef IRremote_h
-#include <IRremote.h>
-#endif
-
-//#ifndef __AVR__
-//#define __AVR__
-//#endif
-//
-//#ifndef __AVR_ATmega328P__
-//#define __AVR_ATmega328P__
-//#endif
-
-
+#include "IRremote.h"
 
 #include <cores/arduino/SerialSimulator.h>
 #ifndef Arduino_h
 #include <Arduino.h>
 #endif
-//#define RAW_BUFFER_LENGTH 100
-//#define IR_SEND_PIN 3
-//#define SEND_PWM_BY_TIMER 4
-
-//#ifndef _IR_SEND_HPP
-//#include <IRSend.hpp>
-//#endif
 
 #define PIN_NOT_SET 0
 const long SERIAL_BAUDRATE = 9600;
@@ -135,6 +116,7 @@ typedef struct STIRConfig
 class STIR
 {
 public:
+	STIR() = default;
 	STIR(int irReceivePin, int irSendPin);
 	STIR(STIRConfig config);
 	void sendBinary(bool binaryMessage[]);
@@ -145,6 +127,8 @@ public:
 	void endListen();
 	State getState();
 private:
+	IRrecv irrecv;
+	IRsend irsend;
 	State state;
 	int pinWaiting;
 	int pinReceiving;

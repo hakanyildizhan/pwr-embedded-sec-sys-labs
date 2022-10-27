@@ -2,17 +2,8 @@
 #ifndef STIR_h
 #include <STIR.h>
 #endif
-//#define USE_IRREMOTE_HPP_AS_PLAIN_INCLUDE
-#define NUMBER_OF_REPEATS 3U
 
-//IRrecv irrecv(2);
-//decode_results results;
-//IRsend irsend;
-
-IRrecv irrecv(2);
-IRsend irsend;
-
-STIR::STIR(int irReceivePin, int irSendPin)
+STIR::STIR(int irReceivePin, int irSendPin) : irrecv(2), irsend()
 {
 	pinWaiting = PIN_NOT_SET;
 	pinReceiving = PIN_NOT_SET;
@@ -26,7 +17,7 @@ STIR::STIR(int irReceivePin, int irSendPin)
 	irStarted = false;
 }
 
-STIR::STIR(STIRConfig config)
+STIR::STIR(STIRConfig config) : irrecv(2), irsend()
 {
 	pinWaiting = config.listeningLEDPin;
 	pinReceiving = config.receivingLEDPin;

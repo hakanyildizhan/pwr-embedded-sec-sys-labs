@@ -6,12 +6,11 @@
 		<VirtualLibrariesPath>%USERPROFILE%\Documents\Arduino\libraries.virtual\</VirtualLibrariesPath>
 	</PropertyGroup>
 	<ItemDefinitionGroup>
-		<ClCompile>
-			<AdditionalIncludeDirectories>
+    <ClCompile>
+      <AdditionalIncludeDirectories>
         libraries;
-        C:\Users\yildi\AppData\Local\Programs\Arduino IDE\sketchbooks\libraries\IRremote\;
         %(AdditionalIncludeDirectories)
       </AdditionalIncludeDirectories>
-		</ClCompile>
+    </ClCompile>
 	</ItemDefinitionGroup>
 </Project>
