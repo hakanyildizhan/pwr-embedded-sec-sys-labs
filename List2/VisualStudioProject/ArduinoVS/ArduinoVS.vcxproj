@@ -55,7 +55,7 @@
       <SDLCheck>true</SDLCheck>
       <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
-      <AdditionalIncludeDirectories>libraries;$(SolutionDir)\IRRemoteLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
+      <AdditionalIncludeDirectories>libraries\A51Cipher;libraries\STIR;$(SolutionDir)\IRRemoteLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
       <PrecompiledHeaderFile>stdafx.h</PrecompiledHeaderFile>
       <CallingConvention>Cdecl</CallingConvention>
@@ -69,7 +69,8 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>cp -u ..\..\Sketch\Sketch.ino ArduinoVS\Sketch.h</Command>
+      <Command>cp -u ArduinoVS\Sketch.h ..\..\Sketch\Sketch.ino
+robocopy libraries "%LOCALAPPDATA%\Programs\Arduino IDE\sketchbooks\libraries" /E /XO /IM &amp; exit 0</Command>
     </PreBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -93,8 +94,8 @@
   </ItemDefinitionGroup>
   <ItemGroup>
     <ClCompile Include="Application.cpp" />
-    <ClCompile Include="libraries\A51Cipher.cpp" />
-    <ClCompile Include="libraries\STIR.cpp" />
+    <ClCompile Include="libraries\A51Cipher\A51Cipher.cpp" />
+    <ClCompile Include="libraries\STIR\STIR.cpp" />
   </ItemGroup>
   <ItemGroup>
     <None Include="ArduinoVS\ArduinoVS.ino" />
@@ -103,8 +104,8 @@
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="ArduinoVS\Sketch.h" />
-    <ClInclude Include="libraries\A51Cipher.h" />
-    <ClInclude Include="libraries\STIR.h" />
+    <ClInclude Include="libraries\A51Cipher\A51Cipher.h" />
+    <ClInclude Include="libraries\STIR\STIR.h" />
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\IRRemoteLib\IRRemoteLib.vcxproj">
