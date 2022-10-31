@@ -79,8 +79,13 @@ void STIR::communicationLoop()
 	if (Serial.available() > 0) {
 		String str = Serial.readString();
 		Serial.readString().toCharArray(bufferMessageFromPC, str.length());
+		if ((uint8_t)bufferMessageFromPC[0] == 160)
+		{
+			return;
+		}
 		bufferMessageFromPCSize = str.length();
-		Serial.println("received message from pc");
+		Serial.print("received message from pc: ");
+		Serial.println(str);
 	}
 	
 	if (IrReceiver.decodeNEC())
@@ -193,7 +198,7 @@ void STIR::sendBinary(bool binaryMessage[])
 	Serial.println();
 	uint16_t* hexMessage = convertBinToCommandSequence(binaryMessage, size);
 
-	IrSender.sendNEC(0x7E, 0xB3, 3);
+	IrSender.sendNEC(0x7E, role, 0);
 	//for (size_t i = 0; i < size/8; i++)
 	//{
 	//	IrSender.sendNEC(hexMessage[i], role, 0);
