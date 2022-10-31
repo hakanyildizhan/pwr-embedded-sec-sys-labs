@@ -32,8 +32,9 @@ STIR::STIR(int irReceivePin, int irSendPin)
 	Buffer = Buffer::Buffer();
 }
 
-STIR::STIR(STIRConfig config)
+STIR::STIR(STIRConfig config, uint8_t cfgRole)
 {
+	role = cfgRole;
 	pinWaiting = config.listeningLEDPin;
 	pinReceiving = config.receivingLEDPin;
 	pinSending = config.sendingLEDPin;
@@ -91,7 +92,7 @@ void STIR::communicationLoop()
 		}
 
 		uint8_t command = IrReceiver.decodedIRData.command;
-		if (command == 0x1) {
+		if (command == role) {
 			return;
 		}
 		uint16_t address = IrReceiver.decodedIRData.address;
@@ -192,13 +193,13 @@ void STIR::sendBinary(bool binaryMessage[])
 
 	for (size_t i = 0; i < size/8; i++)
 	{
-		IrSender.sendNEC(hexMessage[i], 0x1, 0);
+		IrSender.sendNEC(hexMessage[i], role, 0);
 		delay(100);
 		/*Serial.print("sent ");
 		Serial.println(i);*/
 	}
 	delay(100);
-	IrSender.sendNEC(0xFF, 0x1, 0);
+	IrSender.sendNEC(0xFF, role, 0);
 	//Serial.println("sent all");
 }
 

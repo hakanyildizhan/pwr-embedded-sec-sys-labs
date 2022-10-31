@@ -22,12 +22,4 @@ void loop()
         bool* encryptedMessage = cipherLib.encryptMessage(commLib.bufferMessageFromPC);
         commLib.sendBinary(encryptedMessage);
     }
-
-    /*if (!sent) {
-        delay(3000);
-        char message[] = "Hello";
-        bool* encryptedMessage = cipherLib.encryptMessage(message);
-        commLib.sendBinary(encryptedMessage, 40);
-        sent = true;
-    }*/
 }

@@ -120,7 +120,7 @@ class STIR
 public:
 	STIR() = default;
 	STIR(int irReceivePin, int irSendPin);
-	STIR(STIRConfig config);
+	STIR(STIRConfig config, uint8_t role);
 	void sendBinary(bool binaryMessage[]);
 	void sendString(String message);
 	void communicationLoop();
@@ -134,6 +134,7 @@ public:
 	char* bufferMessageFromPC;
 	uint16_t bufferMessageFromPCSize;
 	void freeBufferMessageFromPC();
+	uint8_t role;
 private:
 	State state;
 	int pinWaiting;
