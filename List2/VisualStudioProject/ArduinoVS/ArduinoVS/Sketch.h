@@ -20,7 +20,10 @@ void loop()
     commLib.communicationLoop();
     if (commLib.bufferMessageFromPCSize > 0)
     {
+        Serial.println("buffer is not empty, encrypting");
         bool* encryptedMessage = cipherLib.encryptMessage(commLib.bufferMessageFromPC);
+        Serial.println("encrypted");
         commLib.sendBinary(encryptedMessage);
+        Serial.println("sent it");
     }
 }

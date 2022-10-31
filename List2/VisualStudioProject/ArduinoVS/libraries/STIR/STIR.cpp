@@ -80,6 +80,7 @@ void STIR::communicationLoop()
 		String str = Serial.readString();
 		Serial.readString().toCharArray(bufferMessageFromPC, str.length());
 		bufferMessageFromPCSize = str.length();
+		Serial.println("received message from pc");
 	}
 	
 	if (IrReceiver.decodeNEC())
@@ -181,25 +182,27 @@ void STIR::freeBufferMessageFromPC()
 
 void STIR::sendBinary(bool binaryMessage[])
 {
-	//Serial.print("Sending binary: ");
+	
 	uint16_t size = (bufferMessageFromPCSize - 1) * 8;
+	Serial.print("Sending binary: ");
 	freeBufferMessageFromPC();
-	/*for (size_t i = 0; i < size; i++)
+	for (size_t i = 0; i < size; i++)
 	{
 		Serial.print(binaryMessage[i] == true ? '1' : '0');
 	}
-	Serial.println();*/
+	Serial.println();
 	uint16_t* hexMessage = convertBinToCommandSequence(binaryMessage, size);
 
-	for (size_t i = 0; i < size/8; i++)
-	{
-		IrSender.sendNEC(hexMessage[i], role, 0);
-		delay(100);
-		/*Serial.print("sent ");
-		Serial.println(i);*/
-	}
-	delay(100);
-	IrSender.sendNEC(0xFF, role, 0);
+	IrSender.sendNEC(0x7E, 0xB3, 3);
+	//for (size_t i = 0; i < size/8; i++)
+	//{
+	//	IrSender.sendNEC(hexMessage[i], role, 0);
+	//	//delay(100);
+	//	/*Serial.print("sent ");
+	//	Serial.print(i);*/
+	//}
+	////delay(100);
+	//IrSender.sendNEC(0xFF, role, 0);
 	//Serial.println("sent all");
 }
 
