@@ -84,6 +84,10 @@ void STIR::communicationLoop()
 	
 	if (IrReceiver.decodeNEC())
 	{
+		uint8_t command = IrReceiver.decodedIRData.command;
+		if (command == role) {
+			return;
+		}
 		Serial.println("DECODING");
 		if (state == State::WAITING)
 		{
@@ -91,10 +95,6 @@ void STIR::communicationLoop()
 			state = State::RECEIVING;
 		}
 
-		uint8_t command = IrReceiver.decodedIRData.command;
-		if (command == role) {
-			return;
-		}
 		uint16_t address = IrReceiver.decodedIRData.address;
 		Serial.print("Address: ");
 		Serial.println(address);
