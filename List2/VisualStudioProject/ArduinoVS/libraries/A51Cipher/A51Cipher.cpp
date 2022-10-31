@@ -1,4 +1,3 @@
-#include "Arduino.h"
 #ifndef A51Cipher_h  
 #include "A51Cipher.h"
 
@@ -213,34 +212,37 @@ void A51Cipher::phaseTwo(bool(&keyStream)[228])
 	memcpy(cipherKey, keyStream, 228);
 }
 
-void A51Cipher::encryptMessage(char message[], int messageSize, bool encryptedMessage[])
+bool* A51Cipher::encryptMessage(char* message)
 {
 	if (!cipherKeyGenerated)
 	{
-		return;
+		bool res[1] = { false };
+		return res;
 		//throw std::runtime_error("Cipher key not generated");
 	}
 
-	bool* binaryMessage = (bool*)malloc(sizeof(bool) * (messageSize * 8));
-	memset(binaryMessage, false, sizeof(bool) * (messageSize * 8));
+	size_t len = strlen(message);
+	bool* encryptedMessage = (bool*)malloc(sizeof(bool) * len*8);
 
-	for (int i = 0; i < messageSize; i++)
-	{
-		for (int j = 0; j < 8; j++)
-		{
-			binaryMessage[i * 8 + 7 - j] = bitRead(message[i], j) == 1;
+	for (size_t i = 0; i < len; ++i) {
+		for (int j = 7; j >= 0; --j) {
+			encryptedMessage[i*8+(7-j)] = (message[i] & (1 << j) ? 1 : 0) ^ cipherKey[(i * 8 + (7 - j)) % 228];
 		}
 	}
-
-	for (int i = 0; i < messageSize * 8; i++)
-	{
-		encryptedMessage[i] = binaryMessage[i] ^ cipherKey[i % 228];
-	}
-
-	free(binaryMessage);
+	return encryptedMessage;
 }
 
-void A51Cipher::decryptMessage(bool encryptedMessage[], int encryptedMessageSize, char message[])
+void A51Cipher::convertStringToBinary(char* message, bool binaryMessage[])
+{
+	size_t len = strlen(message);
+	for (size_t i = 0; i < len; ++i) {
+		for (int j = 7; j >= 0; --j) {
+			binaryMessage[i * 8 + (7 - j)] = (message[i] & (1 << j) ? 1 : 0);
+		}
+	}
+}
+
+void A51Cipher::decryptMessage(bool encryptedMessage[], uint8_t encryptedMessageSize, char message[])
 {
 	if (!cipherKeyGenerated)
 	{

@@ -21,16 +21,43 @@
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="IRremote.h">
+    <ClInclude Include="IRremoteInt.h">
       <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IRFeedbackLED.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="digitalMock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IRTimerMock.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IRReceive.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IRremote.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="IRSend.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ir_NEC.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ir_Pronto.hpp">
+      <Filter>Source Files</Filter>
+    </ClInclude>
+    <ClInclude Include="ir_Protocols.hpp">
+      <Filter>Source Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="IRremote.cpp">
-      <Filter>Source Files</Filter>
-    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <None Include="packages.config" />
   </ItemGroup>
 </Project>

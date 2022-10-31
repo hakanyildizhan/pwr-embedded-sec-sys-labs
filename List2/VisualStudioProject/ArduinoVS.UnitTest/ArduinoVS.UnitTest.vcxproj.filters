@@ -13,15 +13,6 @@
       <UniqueIdentifier>{67DA6AB6-F800-4c08-8B7A-83BB121AAD01}</UniqueIdentifier>
       <Extensions>rc;ico;cur;bmp;dlg;rc2;rct;bin;rgs;gif;jpg;jpeg;jpe;resx;tiff;tif;png;wav;mfcribbon-ms</Extensions>
     </Filter>
-    <Filter Include="libraries">
-      <UniqueIdentifier>{67bcde48-9c2e-4dad-8a77-08c81afb073e}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libraries\A51Cipher">
-      <UniqueIdentifier>{73c5c576-ad40-42af-af51-21726c58656f}</UniqueIdentifier>
-    </Filter>
-    <Filter Include="libraries\STIR">
-      <UniqueIdentifier>{c889ef20-5dda-45ee-a22a-7229ccddd8d1}</UniqueIdentifier>
-    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="UnitTestA51Cipher.cpp">
@@ -30,25 +21,25 @@
     <ClCompile Include="pch.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
-    <ClCompile Include="..\ArduinoVS\libraries\A51Cipher.cpp">
-      <Filter>libraries\A51Cipher</Filter>
-    </ClCompile>
-    <ClCompile Include="..\ArduinoVS\libraries\STIR.cpp">
-      <Filter>libraries\STIR</Filter>
-    </ClCompile>
     <ClCompile Include="UnitTestSTIR.cpp">
       <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ArduinoVS\libraries\STIR\STIR.cpp">
+      <Filter>Header Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\ArduinoVS\libraries\A51Cipher\A51Cipher.cpp">
+      <Filter>Header Files</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="pch.h">
       <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoVS\libraries\A51Cipher.h">
-      <Filter>libraries\A51Cipher</Filter>
+    <ClInclude Include="..\ArduinoVS\libraries\A51Cipher\A51Cipher.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
-    <ClInclude Include="..\ArduinoVS\libraries\STIR.h">
-      <Filter>libraries\STIR</Filter>
+    <ClInclude Include="..\ArduinoVS\libraries\STIR\STIR.h">
+      <Filter>Header Files</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -1,11 +1,10 @@
-#define ARDUINO 10800
-#define __AVR_ATmega328P__
+#ifndef MS_CPP_UNITTESTFRAMEWORK
+#include <CppUnitTest.h>
+#endif
 
-#include <VirtualBoardTest.h>
-#include "pch.h"
-#include "CppUnitTest.h"
 #ifndef A51Cipher_h  
-#include "A51Cipher.h"
+#include <A51Cipher.h>
+#endif
 
 using namespace Microsoft::VisualStudio::CppUnitTestFramework;
 
@@ -60,9 +59,8 @@ namespace ArduinoVSUnitTest
 			bool cipherKeyOne[228];
 			cipher.createCipherKey(cipherKeyOne);
 
-			bool encryptedMessage[128];
 			char originalMessage[] = "Hello my friends";
-			cipher.encryptMessage(originalMessage, sizeof(originalMessage) - 1, encryptedMessage);
+			bool* encryptedMessage = cipher.encryptMessage(originalMessage);
 
 			char decryptedMessage[17];
 			cipher.decryptMessage(encryptedMessage, sizeof(encryptedMessage), decryptedMessage);
@@ -94,9 +92,9 @@ namespace ArduinoVSUnitTest
 		void EncryptBeforeCreatingCypherKey()
 		{
 			A51Cipher cipher;
-			bool encryptedMessage[128];
+			
 			char originalMessage[] = "Hello my friends";
-			cipher.encryptMessage(originalMessage, sizeof(originalMessage) - 1, encryptedMessage);
+			bool* encryptedMessage = cipher.encryptMessage(originalMessage);
 		}
 
 		void DecryptBeforeCreatingCypherKey()
@@ -108,5 +106,5 @@ namespace ArduinoVSUnitTest
 		}
 	};
 
+	
 }
-#endif

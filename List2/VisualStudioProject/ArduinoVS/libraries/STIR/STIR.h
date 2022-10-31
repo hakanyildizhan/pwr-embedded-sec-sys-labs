@@ -1,21 +1,24 @@
 #pragma once
 #ifndef STIR_h
 #define STIR_h
+
+#ifndef Arduino_h
+#include <Arduino.h>
 #endif
 
 #ifndef ARDUINO
 #define ARDUINO 10800
 #endif
 
-#include "IRremote.h"
-
+#ifdef VISUAL_STUDIO
 #include <cores/arduino/SerialSimulator.h>
-#ifndef Arduino_h
-#include <Arduino.h>
-#endif
+#endif // VISUAL_STUDIO
 
 #define PIN_NOT_SET 0
-const long SERIAL_BAUDRATE = 9600;
+#define ENABLE_LED_FEEDBACK true
+//#define IR_SEND_PIN 3
+
+const long SERIAL_BAUDRATE = 115200;
 
 typedef void* (*EventHandler)(String);
 
@@ -42,7 +45,7 @@ typedef enum class ProcessIncoming
 	WRITETOSERIAL
 } ProcessIncoming;
 
-typedef struct STIRConfig 
+struct STIRConfig 
 {
 	int listeningLEDPin;
 	int receivingLEDPin; 
@@ -63,8 +66,8 @@ typedef struct STIRConfig
 		sendingLEDPin = sendingLedPin;
 		irReceivePin = receiveIrPin;
 		irSendPin = sendIrPin;
-		#undef IR_SEND_PIN
-		#define IR_SEND_PIN irSendPin
+		/*#undef IR_SEND_PIN
+		#define IR_SEND_PIN irSendPin*/
 		incomingMessageProcessing = ProcessIncoming::WRITETOSERIAL;
 		onMessageReceived = doNothing;
 	}
@@ -81,8 +84,8 @@ typedef struct STIRConfig
 		sendingLEDPin = sendingLedPin;
 		irReceivePin = receiveIrPin;
 		irSendPin = sendIrPin;
-		#undef IR_SEND_PIN
-		#define IR_SEND_PIN irSendPin
+		/*#undef IR_SEND_PIN
+		#define IR_SEND_PIN irSendPin*/
 		incomingMessageProcessing = messageProcessing;
 		onMessageReceived = doNothing;
 	}
@@ -97,21 +100,20 @@ typedef struct STIRConfig
 		receivingLEDPin = receivingLedPin;
 		sendingLEDPin = sendingLedPin;
 		irReceivePin = receiveIrPin;
+		irSendPin = 3;
 		incomingMessageProcessing = ProcessIncoming::DONOTHING;
 		onMessageReceived = onMessage;
 	}
-
-	/*void doNothing(String p) {  }*/
 };
 
-//typedef struct _event {
-//	EventHandler handler;
-//}Event, * PEvent;
-
-//typedef struct Message {
-//	int length;
-//	char content[];
-//} Message;
+struct Buffer
+{
+public:
+	Buffer() = default;
+	Buffer(uint16_t* buffer, uint8_t bufferSize);
+	uint16_t* Messagebuffer;
+	uint8_t BufferSize;
+};
 
 class STIR
 {
@@ -126,9 +128,13 @@ public:
 	void beginListen();
 	void endListen();
 	State getState();
+	Buffer Buffer;
+	uint16_t* STIR::convertBinToCommandSequence(bool bin[], size_t size);
+	//bool messageFromPCAvailable;
+	char* bufferMessageFromPC;
+	uint16_t bufferMessageFromPCSize;
+	void freeBufferMessageFromPC();
 private:
-	IRrecv irrecv;
-	IRsend irsend;
 	State state;
 	int pinWaiting;
 	int pinReceiving;
@@ -139,10 +145,13 @@ private:
 	bool initiated;
 	int pinIRReceive;
 	int pinIRSend;
+	uint16_t* buffer;
+	uint8_t bufferSize;
 	void beginListenSerial();
 	void beginListenIR();
-	char* convertBinToHexString(bool bin[]);
 	String convertHexToBin(const char s[]);
 	String convertBinToHex(const String& s);
-	decode_results results;
+	uint16_t intpow(uint8_t x);
+	
 };
+#endif

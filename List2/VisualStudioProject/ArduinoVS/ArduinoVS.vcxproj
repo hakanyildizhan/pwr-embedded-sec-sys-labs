@@ -53,7 +53,7 @@
       <WarningLevel>Level3</WarningLevel>
       <Optimization>Disabled</Optimization>
       <SDLCheck>true</SDLCheck>
-      <PreprocessorDefinitions>WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
+      <PreprocessorDefinitions>VISUAL_STUDIO;WIN32;_DEBUG;_CONSOLE;%(PreprocessorDefinitions)</PreprocessorDefinitions>
       <ConformanceMode>false</ConformanceMode>
       <AdditionalIncludeDirectories>libraries\A51Cipher;libraries\STIR;$(SolutionDir)\IRRemoteLib;%(AdditionalIncludeDirectories)</AdditionalIncludeDirectories>
       <PrecompiledHeader>NotUsing</PrecompiledHeader>
@@ -69,9 +69,14 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>cp -u ArduinoVS\Sketch.h ..\..\Sketch\Sketch.ino
-robocopy libraries "%LOCALAPPDATA%\Programs\Arduino IDE\sketchbooks\libraries" /E /XO /IM &amp; exit 0</Command>
+      <Command>
+      </Command>
     </PreBuildEvent>
+    <PostBuildEvent>
+      <Command>XCOPY $(MSBuildThisFileDirectory)native\libs\*.dll "$(TargetDir)" /D /K /Y
+cp -u $(MSBuildThisFileDirectory)ArduinoVS\Sketch.h $(SolutionDir)..\Sketch\Sketch.ino
+robocopy libraries "%LOCALAPPDATA%\Programs\Arduino IDE\sketchbooks\libraries" /E /XO /IM &amp; exit 0</Command>
+    </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
     <ClCompile>
