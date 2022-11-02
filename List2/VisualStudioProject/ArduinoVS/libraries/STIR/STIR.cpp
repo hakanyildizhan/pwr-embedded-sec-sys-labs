@@ -72,6 +72,118 @@ void STIR::beginListen()
 	}
 }
 
+bool STIR::listenForCipherKey(bool buffer[232])
+{
+	IrReceiver.begin(pinIRReceive, false);
+	while (true)
+	{
+		if (IrReceiver.decodeNEC())
+		{
+			uint8_t command = IrReceiver.decodedIRData.command;
+			uint16_t address = IrReceiver.decodedIRData.address;
+			if (address == role || address == 0) {
+				//delay(50);
+				IrReceiver.resume();
+				continue;
+			}
+
+			if (state == State::WAITING)
+			{
+				Serial.println("Receiving");
+				state = State::RECEIVING;
+			}
+
+			Serial.print('#');
+			Serial.print(bufferSize+1);
+			Serial.print(' ');
+			IrReceiver.printIRResultShort(&Serial);
+
+			bufferCipherKey[bufferSize++] = command;
+
+			if (command == 0xFF && address == 0xFF) // message end
+			{
+				IrReceiver.stop();
+				state = State::WAITING;
+				messageReceived = true;
+				Serial.println("Cipher key received completely");
+				IrSender.begin(pinIRSend, false);
+				uint16_t buf[3];
+				buf[0] = 9000;  // Mark 9ms
+				buf[1] = 2250;  // Space 2.25ms
+				buf[2] = 560;   // Burst
+				for (size_t i = 0; i < 60; i++)
+				{
+					IrSender.sendNEC(0xFF, 0xFF, 0);
+					delay(40);
+					IrSender.sendRaw(buf, 3, 38);
+					delay(96);
+				}
+				bufferSize = 0;
+				buildCipherKey();
+				return true;
+			}
+			IrReceiver.resume(); // Enable receiving of the next value
+		}
+		delay(50);
+	}
+	return false;
+}
+
+bool STIR::sendCipherKey(bool buffer[228])
+{
+	Serial.print("Key: ");
+	for (size_t i = 0; i < 228; i++)
+	{
+		Serial.print(buffer[i] == true ? '1' : '0');
+	}
+	Serial.println();
+	state = State::SENDING;
+	
+	bool cipherKey[232];
+	memcpy(cipherKey, buffer, 228);
+	uint8_t* hexMessage = convertBinToCommandSequence(cipherKey, 232);
+	IrSender.begin(pinIRSend, false);
+
+	uint16_t buf[3];
+	buf[0] = 9000;  // Mark 9ms
+	buf[1] = 2250;  // Space 2.25ms
+	buf[2] = 560;   // Burst
+	for (size_t i = 0; i < 232 / 8; i++)
+	{
+		IrSender.sendNEC(role, hexMessage[i], 0);
+		delay(40);
+		IrSender.sendRaw(buf, 3, 38);
+		delay(96);
+	}
+	//delay(48);
+	IrSender.sendNEC(0xFF, 0xFF, 0);
+	delay(96);
+	Serial.println("Sent cipher key, waiting for response");
+	IrReceiver.start();
+	IrReceiver.begin(pinIRReceive, false);
+	for (size_t i = 0; i < 150; i++)
+	{
+		if (IrReceiver.decodeNEC())
+		{
+			if (IrReceiver.decodedIRData.address == role) {
+				return false;
+			}
+
+			if (IrReceiver.decodedIRData.command == 0xFF && IrReceiver.decodedIRData.address == 0xFF) // message end
+			{
+				state = State::WAITING;
+				Serial.println("Cipher key is received by the other party completely");
+				IrReceiver.end();
+				return true;
+			}
+			
+			IrReceiver.resume();
+		}
+		delay(150);
+	}
+	
+	return false;
+}
 
 void STIR::communicationLoop()
 {
@@ -79,10 +191,6 @@ void STIR::communicationLoop()
 	if (Serial.available() > 0) {
 		String str = Serial.readString();
 		Serial.readString().toCharArray(bufferMessageFromPC, str.length());
-		if ((uint8_t)bufferMessageFromPC[0] == 160)
-		{
-			return;
-		}
 		bufferMessageFromPCSize = str.length();
 		Serial.print("received message from pc: ");
 		Serial.println(str);
@@ -91,21 +199,26 @@ void STIR::communicationLoop()
 	if (IrReceiver.decodeNEC())
 	{
 		uint8_t command = IrReceiver.decodedIRData.command;
-		if (command == role) {
+		uint16_t address = IrReceiver.decodedIRData.address;
+		if (address == role) {
 			return;
 		}
-		Serial.println("DECODING");
+
 		if (state == State::WAITING)
 		{
+			if (command == 0xFF && role == 0xFF)
+			{
+				return;
+			}
+
 			Serial.println("Receiving");
 			state = State::RECEIVING;
 		}
 
-		uint16_t address = IrReceiver.decodedIRData.address;
 		Serial.print("Address: ");
 		Serial.println(address);
 
-		if (address == 255) // message end
+		if (command == 0xFF && role == 0xFF) // message end
 		{
 			state = State::WAITING;
 			Buffer = Buffer::Buffer(buffer, bufferSize);
@@ -113,7 +226,7 @@ void STIR::communicationLoop()
 		}
 		else
 		{
-			buffer[bufferSize++] = address;
+			buffer[bufferSize++] = command;
 			Serial.print("Received buffer #");
 			Serial.println(bufferSize);
 			IrReceiver.printIRResultShort(&Serial);
@@ -187,7 +300,6 @@ void STIR::freeBufferMessageFromPC()
 
 void STIR::sendBinary(bool binaryMessage[])
 {
-	
 	uint16_t size = (bufferMessageFromPCSize - 1) * 8;
 	Serial.print("Sending binary: ");
 	freeBufferMessageFromPC();
@@ -196,31 +308,35 @@ void STIR::sendBinary(bool binaryMessage[])
 		Serial.print(binaryMessage[i] == true ? '1' : '0');
 	}
 	Serial.println();
-	uint16_t* hexMessage = convertBinToCommandSequence(binaryMessage, size);
+	uint8_t* hexMessage = convertBinToCommandSequence(binaryMessage, size);
 
-	IrSender.sendNEC(0x7E, role, 0);
-	//for (size_t i = 0; i < size/8; i++)
-	//{
-	//	IrSender.sendNEC(hexMessage[i], role, 0);
-	//	//delay(100);
-	//	/*Serial.print("sent ");
-	//	Serial.print(i);*/
-	//}
-	////delay(100);
-	//IrSender.sendNEC(0xFF, role, 0);
-	//Serial.println("sent all");
+	uint16_t buf[3];
+	buf[0] = 9000;  // Mark 9ms
+	buf[1] = 2250;  // Space 2.25ms
+	buf[2] = 560;   // Burst
+	for (size_t i = 0; i < size/8; i++)
+	{
+		IrSender.sendNEC(role, hexMessage[i], 0);
+		delay(40);
+		IrSender.sendRaw(buf, 3, 38);
+		delay(96);
+	}
+	//delay(48);
+	IrSender.sendNEC(role, 0xFF, 0);
+	delay(96);
+	Serial.println("sent all");
 }
 
-uint16_t* STIR::convertBinToCommandSequence(bool bin[], size_t size)
+uint8_t* STIR::convertBinToCommandSequence(bool bin[], size_t size)
 {
-	uint16_t* decArray = (uint16_t*)malloc(sizeof(uint16_t) * (size / 8));
+	uint8_t* decArray = (uint8_t*)malloc(sizeof(uint8_t) * (size / 8));
 
 	for (size_t i = 0; i < size / 8; i++)
 	{
-		uint16_t dec = 0;
+		uint8_t dec = 0;
 		for (size_t j = 0; j < 8; j++)
 		{
-			dec += (bin[i * 8 + j] ? 1 : 0) * intpow(7 - j);
+			dec += bin[i * 8 + j] ? intpow(7 - j) : 0;
 		}
 
 		decArray[i] = dec;
@@ -304,14 +420,38 @@ uint16_t* STIR::convertBinToCommandSequence(bool bin[], size_t size)
 //	//return binChar;
 //}
 
-uint16_t STIR::intpow(uint8_t x)
+uint8_t powers[8] = { 1, 2, 4, 8, 16, 32, 64, 128 };
+
+uint8_t STIR::intpow(uint8_t x)
 {
-	uint16_t result = 1;
+	/*uint8_t result = 1;
 	for (uint8_t i = 0; i < x; i++)
 	{
 		result *= 2;
 	}
-	return result;
+	return result;*/
+	return powers[x];
+}
+
+void STIR::buildCipherKey()
+{
+	bool cipherKey[232];
+	memset(cipherKey, false, 232);
+
+	for (size_t i = 0; i < 29; i++)
+	{
+		for (uint8_t j = 0; j < 8; j++)
+		{
+			cipherKey[i*8+7-j] = bufferCipherKey[i] & 1;
+			bufferCipherKey[i] /= 2;
+		}
+	}
+	
+	Serial.print("Received key: ");
+	for (size_t i = 0; i < 228; i++)
+	{
+		Serial.print(cipherKey[i] == true ? '1' : '0');
+	}
 }
 
 String STIR::convertHexToBin(const char s[]) {

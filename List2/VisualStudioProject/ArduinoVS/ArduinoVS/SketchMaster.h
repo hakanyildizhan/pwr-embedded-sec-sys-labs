@@ -2,28 +2,34 @@
 #include <STIR.h>
 
 A51Cipher cipherLib;
-STIR commLib(0,0);
+STIR commLib(0, 0);
 bool keyStream[228];
 const uint8_t ROLE = 0x1;
+bool cipherKeyIsSent = false;
 
 void setup()
 {
     cipherLib = A51Cipher();
     cipherLib.createCipherKey(keyStream);
-    STIRConfig config(0, 0, 0, 9, 3, ProcessIncoming::WRITETOSERIAL);
+    STIRConfig config(0, 0, 0, 2, 3, ProcessIncoming::WRITETOSERIAL);
     commLib = STIR(config, ROLE);
     commLib.beginListen();
 }
 
 void loop()
 {
-    commLib.communicationLoop();
-    if (commLib.bufferMessageFromPCSize > 0)
+    if (!cipherKeyIsSent)
     {
-        Serial.println("buffer is not empty, encrypting");
-        bool* encryptedMessage = cipherLib.encryptMessage(commLib.bufferMessageFromPC);
-        Serial.println("encrypted");
-        commLib.sendBinary(encryptedMessage);
-        Serial.println("sent it");
+        cipherKeyIsSent = commLib.sendCipherKey(keyStream);
     }
+    else
+    {
+        //commLib.communicationLoop();
+    }
+    
+    /*if (commLib.bufferMessageFromPCSize > 0)
+    {
+        bool* encryptedMessage = cipherLib.encryptMessage(commLib.bufferMessageFromPC);
+        commLib.sendBinary(encryptedMessage);
+    }*/
 }

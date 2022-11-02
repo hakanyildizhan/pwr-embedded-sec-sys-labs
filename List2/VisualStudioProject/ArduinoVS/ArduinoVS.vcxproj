@@ -69,13 +69,14 @@
       <AdditionalDependencies>%(AdditionalDependencies)</AdditionalDependencies>
     </Link>
     <PreBuildEvent>
-      <Command>
-      </Command>
+      <Command>XCOPY $(MSBuildThisFileDirectory)native\libs\*.dll "$(TargetDir)" /D /K /Y
+cp -u $(MSBuildThisFileDirectory)ArduinoVS\SketchMaster.h $(SolutionDir)..\Sketch\master\Sketch\Sketch.ino
+cp -u $(MSBuildThisFileDirectory)ArduinoVS\SketchSlave.h $(SolutionDir)..\Sketch\slave\Sketch\Sketch.ino
+robocopy libraries "%LOCALAPPDATA%\Programs\Arduino IDE\sketchbooks\libraries" /E /XO /IM &amp; exit 0</Command>
     </PreBuildEvent>
     <PostBuildEvent>
-      <Command>XCOPY $(MSBuildThisFileDirectory)native\libs\*.dll "$(TargetDir)" /D /K /Y
-cp -u $(MSBuildThisFileDirectory)ArduinoVS\Sketch.h $(SolutionDir)..\Sketch\Sketch.ino
-robocopy libraries "%LOCALAPPDATA%\Programs\Arduino IDE\sketchbooks\libraries" /E /XO /IM &amp; exit 0</Command>
+      <Command>
+      </Command>
     </PostBuildEvent>
   </ItemDefinitionGroup>
   <ItemDefinitionGroup Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">
@@ -108,7 +109,8 @@ robocopy libraries "%LOCALAPPDATA%\Programs\Arduino IDE\sketchbooks\libraries" /
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ArduinoVS\Sketch.h" />
+    <ClInclude Include="ArduinoVS\SketchMaster.h" />
+    <ClInclude Include="ArduinoVS\SketchSlave.h" />
     <ClInclude Include="libraries\A51Cipher\A51Cipher.h" />
     <ClInclude Include="libraries\STIR\STIR.h" />
   </ItemGroup>

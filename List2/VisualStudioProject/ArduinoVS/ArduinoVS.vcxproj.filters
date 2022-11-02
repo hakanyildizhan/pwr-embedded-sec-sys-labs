@@ -38,7 +38,7 @@
     <None Include="packages.config" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="ArduinoVS\Sketch.h">
+    <ClInclude Include="ArduinoVS\SketchMaster.h">
       <Filter>Arduino Sketch</Filter>
     </ClInclude>
     <ClInclude Include="libraries\A51Cipher\A51Cipher.h">
@@ -46,6 +46,9 @@
     </ClInclude>
     <ClInclude Include="libraries\STIR\STIR.h">
       <Filter>Arduino Sketch\libraries\STIR</Filter>
+    </ClInclude>
+    <ClInclude Include="ArduinoVS\SketchSlave.h">
+      <Filter>Arduino Sketch</Filter>
     </ClInclude>
   </ItemGroup>
 </Project>

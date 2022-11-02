@@ -8,4 +8,4 @@
 // Include additional Arduino libraries *.cpp files here
 //#include "../../../libraries/RfControl/src/RfControl.cpp"
 
-#include "ArduinoVS/Sketch.h"
+#include "ArduinoVS/SketchMaster.h"

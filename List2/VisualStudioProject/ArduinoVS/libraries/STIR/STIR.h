@@ -126,15 +126,19 @@ public:
 	void communicationLoop();
 	//String receive();
 	void beginListen();
+	bool listenForCipherKey(bool buffer[232]);
+	bool sendCipherKey(bool buffer[228]);
 	void endListen();
 	State getState();
 	Buffer Buffer;
-	uint16_t* STIR::convertBinToCommandSequence(bool bin[], size_t size);
+	uint8_t* STIR::convertBinToCommandSequence(bool bin[], size_t size);
 	//bool messageFromPCAvailable;
 	char* bufferMessageFromPC;
-	uint16_t bufferMessageFromPCSize;
+	uint8_t bufferCipherKey[29];
+	uint8_t bufferMessageFromPCSize;
 	void freeBufferMessageFromPC();
 	uint8_t role;
+	bool messageReceived;
 private:
 	State state;
 	int pinWaiting;
@@ -152,7 +156,8 @@ private:
 	void beginListenIR();
 	String convertHexToBin(const char s[]);
 	String convertBinToHex(const String& s);
-	uint16_t intpow(uint8_t x);
+	void buildCipherKey();
+	uint8_t intpow(uint8_t x);
 	
 };
 #endif
