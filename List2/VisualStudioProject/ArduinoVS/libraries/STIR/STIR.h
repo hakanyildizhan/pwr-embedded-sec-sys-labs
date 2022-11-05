@@ -106,14 +106,14 @@ struct STIRConfig
 	}
 };
 
-struct Buffer
-{
-public:
-	Buffer() = default;
-	Buffer(uint8_t* buffer, uint8_t bufferSize);
-	uint8_t* Messagebuffer;
-	uint8_t BufferSize;
-};
+//struct Buffer
+//{
+//public:
+//	Buffer() = default;
+//	Buffer(uint8_t* buffer, uint8_t bufferSize);
+//	uint8_t* Messagebuffer;
+//	uint8_t BufferSize;
+//};
 
 class STIR
 {
@@ -129,13 +129,17 @@ public:
 	bool sendCipherKey(bool* buffer);
 	void endListen();
 	State getState();
-	Buffer Buffer;
-	uint8_t* STIR::convertBinToCommandSequence(bool bin[], size_t size);
-	char bufferMessageFromPC[100];
+	//Buffer Buffer;
+	uint8_t* convertBinToCommandSequence(bool bin[], size_t size);
+	bool* convertCommandSequenceToBin(uint8_t commandSequence[], size_t size);
+	char bufferMessageFromPC[80];
+	bool* bufferMessageFromIR;
 	uint8_t bufferCipherKey[32];
 	bool cipherKey[228];
 	uint8_t bufferMessageFromPCSize;
+	uint8_t bufferMessageFromIRSize;
 	void freeBufferMessageFromPC();
+	void freeBufferMessageFromIR();
 	void beginListenSerial();
 	void beginListenIR();
 	void beginTransmitIR();
@@ -159,9 +163,36 @@ private:
 	uint8_t bufferSize;
 	void sendFinishSequence();
 	void sendAcknowledgedSequence();
-	String convertHexToBin(const char s[]);
-	String convertBinToHex(const String& s);
+	bool waitForAcknowledgedSequence();
 	void buildCipherKey();
 	uint8_t intpow(uint8_t x);
+	uint16_t NEC_BUFFER[3] =
+	{
+		9000,  // Mark 9ms 
+		2250,  // Space 2.25ms
+		560    // Burst
+	};
+
+	bool hexCharToBin[16][4] =
+	{
+		{ false, false, false, false }, // 0 - 0000
+		{ false, false, false, true  },	// 1 - 0001
+		{ false, false, true,  false },	// 2 - 0010
+		{ false, false, true,  true  },	// 3 - 0011
+		{ false, true,  false, false },	// 4 - 0100
+		{ false, true,  false, true  },	// 5 - 0101
+		{ false, true,  true,  false },	// 6 - 0110
+		{ false, true,  true,  true  },	// 7 - 0111
+		{ true,  false, false, false },	// 8 - 1000
+		{ true,  false, false, true  },	// 9 - 1001
+		{ true,  false, true,  false },	// A - 1010
+		{ true,  false, true,  true  },	// B - 1011
+		{ true,  true,  false, false },	// C - 1100
+		{ true,  true,  false, true  },	// D - 1101
+		{ true,  true,  true,  false },	// E - 1110
+		{ true,  true,  true,  true  },	// F - 1111
+	};
+
+	uint8_t powersOf2[8] = { 1, 2, 4, 8, 16, 32, 64, 128 };
 };
 #endif

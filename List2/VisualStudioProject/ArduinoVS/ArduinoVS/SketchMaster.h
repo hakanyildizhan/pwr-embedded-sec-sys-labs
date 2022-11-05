@@ -8,7 +8,7 @@ bool cipherKeyIsSent;
 
 void setup()
 {
-    cipherKeyIsSent = false;
+    cipherKeyIsSent = true;
     cipherLib = A51Cipher();
     
     STIRConfig config(0, 0, 0, 2, 3, ProcessIncoming::WRITETOSERIAL);
@@ -22,7 +22,8 @@ void loop()
     {
         cipherLib.createCipherKey();
         cipherKeyIsSent = commLib.sendCipherKey(cipherLib.cipherKey);
-        if (cipherKeyIsSent) {
+        if (cipherKeyIsSent) 
+        {
             Serial.println("Beginning to listen");
             commLib.beginListen();
         }
@@ -30,11 +31,18 @@ void loop()
     else
     {
         commLib.communicationLoop();
+        if (commLib.bufferMessageFromPCSize > 0)
+        {
+            bool* encryptedMessage = cipherLib.encryptMessage(commLib.bufferMessageFromPC);
+            commLib.sendBinary(encryptedMessage);
+        }
+        if (commLib.bufferMessageFromIRSize > 0)
+        {
+            char* message = (char*)malloc(sizeof(char) * (commLib.bufferMessageFromIRSize+1));
+            cipherLib.decryptMessage(commLib.bufferMessageFromIR, commLib.bufferMessageFromIRSize, message);
+            Serial.println(message);
+            free(message);
+            commLib.freeBufferMessageFromIR();
+        }
     }
-    
-    /*if (commLib.bufferMessageFromPCSize > 0)
-    {
-        bool* encryptedMessage = cipherLib.encryptMessage(commLib.bufferMessageFromPC);
-        commLib.sendBinary(encryptedMessage);
-    }*/
 }

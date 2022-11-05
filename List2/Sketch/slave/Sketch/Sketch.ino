@@ -28,11 +28,18 @@ void loop()
     else
     {
         commLib.communicationLoop();
+        if (commLib.bufferMessageFromPCSize > 0)
+        {
+            bool* encryptedMessage = cipherLib.encryptMessage(commLib.bufferMessageFromPC);
+            commLib.sendBinary(encryptedMessage);
+        }
+        if (commLib.bufferMessageFromIRSize > 0)
+        {
+            char* message = (char*)malloc(sizeof(char) * (commLib.bufferMessageFromIRSize + 1));
+            cipherLib.decryptMessage(commLib.bufferMessageFromIR, commLib.bufferMessageFromIRSize, message);
+            Serial.println(message);
+            free(message);
+            commLib.freeBufferMessageFromIR();
+        }
     }
-    
-    /*if (commLib.bufferMessageFromPCSize > 0)
-    {
-        bool* encryptedMessage = cipherLib.encryptMessage(commLib.bufferMessageFromPC);
-        commLib.sendBinary(encryptedMessage);
-    }*/
 }
