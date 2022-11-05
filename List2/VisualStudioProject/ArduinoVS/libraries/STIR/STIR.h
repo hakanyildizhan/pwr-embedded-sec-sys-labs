@@ -15,7 +15,7 @@
 #endif // VISUAL_STUDIO
 
 #define PIN_NOT_SET 0
-#define ENABLE_LED_FEEDBACK true
+#define ENABLE_LED_FEEDBACK false
 //#define IR_SEND_PIN 3
 
 const long SERIAL_BAUDRATE = 115200;
@@ -110,8 +110,8 @@ struct Buffer
 {
 public:
 	Buffer() = default;
-	Buffer(uint16_t* buffer, uint8_t bufferSize);
-	uint16_t* Messagebuffer;
+	Buffer(uint8_t* buffer, uint8_t bufferSize);
+	uint8_t* Messagebuffer;
 	uint8_t BufferSize;
 };
 
@@ -124,19 +124,23 @@ public:
 	void sendBinary(bool binaryMessage[]);
 	void sendString(String message);
 	void communicationLoop();
-	//String receive();
 	void beginListen();
-	bool listenForCipherKey(bool buffer[232]);
-	bool sendCipherKey(bool buffer[228]);
+	bool listenForCipherKey();
+	bool sendCipherKey(bool* buffer);
 	void endListen();
 	State getState();
 	Buffer Buffer;
 	uint8_t* STIR::convertBinToCommandSequence(bool bin[], size_t size);
-	//bool messageFromPCAvailable;
-	char* bufferMessageFromPC;
-	uint8_t bufferCipherKey[29];
+	char bufferMessageFromPC[100];
+	uint8_t bufferCipherKey[32];
+	bool cipherKey[228];
 	uint8_t bufferMessageFromPCSize;
 	void freeBufferMessageFromPC();
+	void beginListenSerial();
+	void beginListenIR();
+	void beginTransmitIR();
+	void endListenIR();
+	void endListenSerial();
 	uint8_t role;
 	bool messageReceived;
 private:
@@ -146,18 +150,18 @@ private:
 	int pinSending;
 	EventHandler onReceive;
 	bool serialStarted;
-	bool irStarted;
+	bool irListenStarted;
+	bool irTransmitStarted;
 	bool initiated;
 	int pinIRReceive;
 	int pinIRSend;
-	uint16_t* buffer;
+	uint8_t* buffer;
 	uint8_t bufferSize;
-	void beginListenSerial();
-	void beginListenIR();
+	void sendFinishSequence();
+	void sendAcknowledgedSequence();
 	String convertHexToBin(const char s[]);
 	String convertBinToHex(const String& s);
 	void buildCipherKey();
 	uint8_t intpow(uint8_t x);
-	
 };
 #endif

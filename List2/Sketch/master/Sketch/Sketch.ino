@@ -3,28 +3,34 @@
 
 A51Cipher cipherLib;
 STIR commLib(0, 0);
-bool keyStream[228];
+//bool keyStream[228];
 const uint8_t ROLE = 0x1;
-bool cipherKeyIsSent = false;
+bool cipherKeyIsSent;
 
 void setup()
 {
+    cipherKeyIsSent = true;
     cipherLib = A51Cipher();
-    cipherLib.createCipherKey(keyStream);
+    
     STIRConfig config(0, 0, 0, 2, 3, ProcessIncoming::WRITETOSERIAL);
     commLib = STIR(config, ROLE);
-    commLib.beginListen();
+    commLib.beginListenSerial();
 }
 
 void loop()
 {
     if (!cipherKeyIsSent)
     {
-        cipherKeyIsSent = commLib.sendCipherKey(keyStream);
+        cipherLib.createCipherKey();
+        cipherKeyIsSent = commLib.sendCipherKey(cipherLib.cipherKey);
+        if (cipherKeyIsSent) {
+            Serial.println("Beginning to listen");
+            commLib.beginListen();
+        }
     }
     else
     {
-        //commLib.communicationLoop();
+        commLib.communicationLoop();
     }
     
     /*if (commLib.bufferMessageFromPCSize > 0)

@@ -15,16 +15,17 @@ class A51Cipher
 public:
 	A51Cipher();
 	A51Cipher(bool keyStreamInput[228]);
-	void createCipherKey(bool(&keyStream)[228]);
+	void createCipherKey();
 	bool* encryptMessage(char* message);
 	void decryptMessage(bool encryptedMessage[], uint8_t encryptedMessageSize, char message[]);
-	void convertStringToBinary(char* message, bool binaryMessage[]);
+	bool cipherKey[228];
 private:
 	void initialize();
 	void initialize(bool keyInput[64], bool additionalFrame[22]);
 	void generateKeyAndFrame();
 	void phaseOne();
-	void phaseTwo(bool(&keyStream)[228]);
+	void phaseTwo();
+	void convertStringToBinary(char* message, bool binaryMessage[]);
 	bool initialized;
 	bool keyAndFrameInitialized;
 	bool cipherKeyGenerated;
@@ -37,7 +38,7 @@ private:
 	static const uint8_t r1SpecialBit = 8;
 	static const uint8_t r2r3SpecialBit = 10;
 	bool messageReceived[114];
-	bool cipherKey[228];
+	
 };
 
 #endif

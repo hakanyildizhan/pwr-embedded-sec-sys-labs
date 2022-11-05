@@ -16,15 +16,14 @@ namespace ArduinoVSUnitTest
 
 		TEST_METHOD(Can_Create_Cipher_Key_Correctly)
 		{
-			A51Cipher cipher;
-			bool cipherKey[228];
-			cipher.createCipherKey(cipherKey);
-			Assert::IsTrue(sizeof(cipherKey) == 228, L"Size of the cipher key is not correct");
+			A51Cipher cipher = A51Cipher::A51Cipher();
+			cipher.createCipherKey();
+			Assert::IsTrue(sizeof(cipher.cipherKey) == 228, L"Size of the cipher key is not correct");
 
 			bool allZeroes = true;
 			for (int i = 0; i < 228; i++)
 			{
-				if (cipherKey[i] == true)
+				if (cipher.cipherKey[i] == true)
 				{
 					allZeroes = false;
 					break;
@@ -37,9 +36,11 @@ namespace ArduinoVSUnitTest
 		{
 			A51Cipher cipher;
 			bool cipherKeyOne[228];
-			cipher.createCipherKey(cipherKeyOne);
+			cipher.createCipherKey();
+			memcpy(cipherKeyOne, cipher.cipherKey, 228);
 			bool cipherKeyTwo[228];
-			cipher.createCipherKey(cipherKeyTwo);
+			cipher.createCipherKey();
+			memcpy(cipherKeyTwo, cipher.cipherKey, 228);
 
 			bool different = false;
 			for (int i = 0; i < 228; i++)
@@ -56,14 +57,13 @@ namespace ArduinoVSUnitTest
 		TEST_METHOD(Message_Is_Encrypted_Correctly)
 		{
 			A51Cipher cipher;
-			bool cipherKeyOne[228];
-			cipher.createCipherKey(cipherKeyOne);
+			cipher.createCipherKey();
 
 			char originalMessage[] = "Hello my friends";
 			bool* encryptedMessage = cipher.encryptMessage(originalMessage);
 
 			char decryptedMessage[17];
-			cipher.decryptMessage(encryptedMessage, sizeof(encryptedMessage), decryptedMessage);
+			cipher.decryptMessage(encryptedMessage, strlen(originalMessage)*8, decryptedMessage);
 
 			bool same = true;
 			for (int i = 0; i < 16; i++)

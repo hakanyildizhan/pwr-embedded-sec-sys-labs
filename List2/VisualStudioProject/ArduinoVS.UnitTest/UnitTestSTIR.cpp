@@ -31,7 +31,7 @@ namespace ArduinoVSUnitTest
 			/*bool message[40] = { false, true, false, false, true, false, false, false, false, true, true, false, false, true, false, true, false, true, true, false, true, true, false, false, false, true, true, false, true, true, false, false, false, true, true, false, true, true, true, true };*/
 			bool message[8] = { false, true, false, false, true, false, false, false};
 			STIR stir(0, 0);
-			uint16_t* dec = stir.convertBinToCommandSequence(message, 8);
+			uint8_t* dec = stir.convertBinToCommandSequence(message, 8);
 			/*Assert::IsTrue(dec[0] == 1701604463, L"Incorrect conversion");
 			Assert::IsTrue(dec[1] == 72, L"Incorrect conversion");*/
 			Assert::IsTrue(dec[0] == 909551122, L"Incorrect conversion");

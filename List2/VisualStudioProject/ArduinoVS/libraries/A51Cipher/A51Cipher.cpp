@@ -22,8 +22,8 @@ void A51Cipher::initialize()
 	isMaster = true;
 	keyAndFrameInitialized = false;
 	cipherKeyGenerated = false;
-	memset(key, false, sizeof(key));
-	memset(frame, false, sizeof(frame));
+	memset(key, false, 64);
+	memset(frame, false, 22);
 	memset(r1, false, sizeof(r1));
 	memset(r2, false, sizeof(r2));
 	memset(r3, false, sizeof(r3));
@@ -39,7 +39,7 @@ void A51Cipher::initialize(bool keyInput[64], bool additionalFrame[22])
 	isMaster = false;
 	memcpy(key, keyInput, 64);
 	memcpy(frame, additionalFrame, 22);
-	keyAndFrameInitialized = true;
+	//keyAndFrameInitialized = true;
 	memset(r1, false, sizeof(r1));
 	memset(r2, false, sizeof(r2));
 	memset(r3, false, sizeof(r3));
@@ -47,7 +47,7 @@ void A51Cipher::initialize(bool keyInput[64], bool additionalFrame[22])
 	initialized = true;
 }
 
-void A51Cipher::createCipherKey(bool(&keyStream)[228])
+void A51Cipher::createCipherKey()
 {
 	if (!initialized)
 	{
@@ -57,9 +57,10 @@ void A51Cipher::createCipherKey(bool(&keyStream)[228])
 	{
 		generateKeyAndFrame();
 	}
+	//randomSeed(analogRead(0));
 	phaseOne();
-	memset(keyStream, false, sizeof(keyStream));
-	phaseTwo(keyStream);
+	//memset(keyStream, false, sizeof(keyStream));
+	phaseTwo();
 	cipherKeyGenerated = true;
 }
 
@@ -70,16 +71,21 @@ void A51Cipher::generateKeyAndFrame()
 	// different seed numbers each time the sketch runs.
 	// randomSeed() will then shuffle the random function.
 	randomSeed(analogRead(0));
-
+	//Serial.print("Key: ");
 	for (int i = 0; i < sizeof(key); i++)
 	{
 		key[i] = random(2);
+		//Serial.print(key[i] == true ? '1' : '0');
 	}
-
+	//Serial.println();
+	//Serial.print("Frame: ");
 	for (int i = 0; i < sizeof(frame); i++)
 	{
 		frame[i] = random(2);
+		//Serial.print(frame[i] == true ? '1' : '0');
 	}
+	//Serial.println();
+	keyAndFrameInitialized = true;
 }
 
 void A51Cipher::phaseOne()
@@ -131,9 +137,28 @@ void A51Cipher::phaseOne()
 		}
 		r3[0] = xorResult;
 	}
+
+	/*Serial.print("r1: ");
+	for (int i = 0; i < sizeof(r1); i++)
+	{
+		Serial.print(r1[i] == true ? '1' : '0');
+	}
+	Serial.println();
+	Serial.print("r2: ");
+	for (int i = 0; i < sizeof(r2); i++)
+	{
+		Serial.print(r2[i] == true ? '1' : '0');
+	}
+	Serial.println();
+	Serial.print("r3: ");
+	for (int i = 0; i < sizeof(r3); i++)
+	{
+		Serial.print(r3[i] == true ? '1' : '0');
+	}
+	Serial.println();*/
 }
 
-void A51Cipher::phaseTwo(bool(&keyStream)[228])
+void A51Cipher::phaseTwo()
 {
 	for (int i = 0; i < 100; i++)
 	{
@@ -169,7 +194,7 @@ void A51Cipher::phaseTwo(bool(&keyStream)[228])
 			r3[0] = xorResult;
 		}
 	}
-
+	
 	for (int i = 0; i < 228; i++)
 	{
 		bool majorityBit = ((byte)r1[r1SpecialBit] + (byte)r2[r2r3SpecialBit] + (byte)r3[r2r3SpecialBit]) >= 2 ? true : false;
@@ -206,10 +231,9 @@ void A51Cipher::phaseTwo(bool(&keyStream)[228])
 
 		// XOR last bits, add to keystream
 		bool tobeAddedToKeystream = r1[sizeof(r1) - 1] ^ r2[sizeof(r2) - 1] ^ r3[sizeof(r3) - 1];
-		keyStream[i] = tobeAddedToKeystream;
+		//Serial.print(tobeAddedToKeystream ? '1' : '0');
+		cipherKey[i] = tobeAddedToKeystream;
 	}
-
-	memcpy(cipherKey, keyStream, 228);
 }
 
 bool* A51Cipher::encryptMessage(char* message)
@@ -222,14 +246,13 @@ bool* A51Cipher::encryptMessage(char* message)
 	}
 
 	size_t len = strlen(message);
-	bool* encryptedMessage = (bool*)malloc(sizeof(bool) * len*8);
+	bool* binMessage = (bool*)malloc(sizeof(bool) * len*8);
+	convertStringToBinary(message, binMessage);
 
-	for (size_t i = 0; i < len; ++i) {
-		for (int j = 7; j >= 0; --j) {
-			encryptedMessage[i*8+(7-j)] = (message[i] & (1 << j) ? 1 : 0) ^ cipherKey[(i * 8 + (7 - j)) % 228];
-		}
+	for (size_t i = 0; i < len * 8; i++) {
+		binMessage[i] = binMessage[i] ^ cipherKey[i % 228];
 	}
-	return encryptedMessage;
+	return binMessage;
 }
 
 void A51Cipher::convertStringToBinary(char* message, bool binaryMessage[])
