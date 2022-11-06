@@ -8,6 +8,7 @@
 
 #ifdef VISUAL_STUDIO
 #include <cores/arduino/SerialSimulator.h>
+#include <stdexcept>
 #endif // VISUAL_STUDIO
 
 class A51Cipher
@@ -21,24 +22,12 @@ public:
 	bool cipherKey[228];
 private:
 	void initialize();
-	void initialize(bool keyInput[64], bool additionalFrame[22]);
 	void generateKeyAndFrame();
-	void phaseOne();
-	void phaseTwo();
 	void convertStringToBinary(char* message, bool binaryMessage[]);
 	bool initialized;
 	bool keyAndFrameInitialized;
 	bool cipherKeyGenerated;
 	bool isMaster;
-	bool key[64];
-	bool frame[22];
-	bool r1[19];
-	bool r2[22];
-	bool r3[23];
-	static const uint8_t r1SpecialBit = 8;
-	static const uint8_t r2r3SpecialBit = 10;
-	bool messageReceived[114];
-	
 };
 
 #endif

@@ -2,17 +2,14 @@
 #include <STIR.h>
 
 A51Cipher cipherLib;
-STIR commLib(0, 0);
-const uint8_t ROLE = 0x1;
+STIR commLib(PIN_NOT_SET, PIN_NOT_SET);
 bool cipherKeyIsSent;
 
 void setup()
 {
-    cipherKeyIsSent = true;
+    cipherKeyIsSent = false;
     cipherLib = A51Cipher();
-    
-    STIRConfig config(0, 0, 0, 2, 3, ProcessIncoming::WRITETOSERIAL);
-    commLib = STIR(config, ROLE);
+    commLib = STIR(PIN_NOT_SET, PIN_NOT_SET, PIN_NOT_SET, 2, 3, true);
     commLib.beginListenSerial();
 }
 
@@ -24,7 +21,6 @@ void loop()
         cipherKeyIsSent = commLib.sendCipherKey(cipherLib.cipherKey);
         if (cipherKeyIsSent) 
         {
-            Serial.println("Beginning to listen");
             commLib.beginListen();
         }
     }
@@ -41,6 +37,7 @@ void loop()
             char* message = (char*)malloc(sizeof(char) * (commLib.bufferMessageFromIRSize+1));
             cipherLib.decryptMessage(commLib.bufferMessageFromIR, commLib.bufferMessageFromIRSize, message);
             Serial.println(message);
+            commLib.isReceiving = false;
             free(message);
             commLib.freeBufferMessageFromIR();
         }

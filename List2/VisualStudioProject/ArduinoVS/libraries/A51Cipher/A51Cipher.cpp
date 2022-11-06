@@ -22,28 +22,6 @@ void A51Cipher::initialize()
 	isMaster = true;
 	keyAndFrameInitialized = false;
 	cipherKeyGenerated = false;
-	memset(key, false, 64);
-	memset(frame, false, 22);
-	memset(r1, false, sizeof(r1));
-	memset(r2, false, sizeof(r2));
-	memset(r3, false, sizeof(r3));
-	memset(cipherKey, false, sizeof(cipherKey));
-	initialized = true;
-}
-
-void A51Cipher::initialize(bool keyInput[64], bool additionalFrame[22])
-{
-	initialized = false;
-	keyAndFrameInitialized = false;
-	cipherKeyGenerated = false;
-	isMaster = false;
-	memcpy(key, keyInput, 64);
-	memcpy(frame, additionalFrame, 22);
-	//keyAndFrameInitialized = true;
-	memset(r1, false, sizeof(r1));
-	memset(r2, false, sizeof(r2));
-	memset(r3, false, sizeof(r3));
-	memset(cipherKey, false, sizeof(cipherKey));
 	initialized = true;
 }
 
@@ -57,10 +35,7 @@ void A51Cipher::createCipherKey()
 	{
 		generateKeyAndFrame();
 	}
-	//randomSeed(analogRead(0));
-	phaseOne();
-	//memset(keyStream, false, sizeof(keyStream));
-	phaseTwo();
+
 	cipherKeyGenerated = true;
 }
 
@@ -71,6 +46,19 @@ void A51Cipher::generateKeyAndFrame()
 	// different seed numbers each time the sketch runs.
 	// randomSeed() will then shuffle the random function.
 	randomSeed(analogRead(0));
+
+	bool key[64];
+	bool frame[22];
+	bool r1[19];
+	bool r2[22];
+	bool r3[23];
+	memset(key, false, 64);
+	memset(frame, false, 22);
+	memset(r1, false, sizeof(r1));
+	memset(r2, false, sizeof(r2));
+	memset(r3, false, sizeof(r3));
+	memset(cipherKey, false, sizeof(cipherKey));
+
 	//Serial.print("Key: ");
 	for (int i = 0; i < sizeof(key); i++)
 	{
@@ -85,11 +73,7 @@ void A51Cipher::generateKeyAndFrame()
 		//Serial.print(frame[i] == true ? '1' : '0');
 	}
 	//Serial.println();
-	keyAndFrameInitialized = true;
-}
 
-void A51Cipher::phaseOne()
-{
 	for (int i = 0; i < sizeof(key); i++)
 	{
 		bool xorResult = r1[13] ^ r1[16] ^ r1[17] ^ r1[18] ^ key[i];
@@ -156,15 +140,12 @@ void A51Cipher::phaseOne()
 		Serial.print(r3[i] == true ? '1' : '0');
 	}
 	Serial.println();*/
-}
 
-void A51Cipher::phaseTwo()
-{
 	for (int i = 0; i < 100; i++)
 	{
-		bool majorityBit = ((byte)r1[r1SpecialBit] + (byte)r2[r2r3SpecialBit] + (byte)r3[r2r3SpecialBit]) >= 2 ? true : false;
+		bool majorityBit = ((byte)r1[8] + (byte)r2[10] + (byte)r3[10]) >= 2 ? true : false;
 
-		if (majorityBit == r1[r1SpecialBit])
+		if (majorityBit == r1[8])
 		{
 			int xorResult = r1[13] ^ r1[16] ^ r1[17] ^ r1[18];
 			for (int j = sizeof(r1) - 1; j > 0; j--)
@@ -174,7 +155,7 @@ void A51Cipher::phaseTwo()
 			r1[0] = xorResult;
 		}
 
-		if (majorityBit == r2[r2r3SpecialBit])
+		if (majorityBit == r2[10])
 		{
 			int xorResult = r2[20] ^ r2[21];
 			for (int j = sizeof(r2) - 1; j > 0; j--)
@@ -184,7 +165,7 @@ void A51Cipher::phaseTwo()
 			r2[0] = xorResult;
 		}
 
-		if (majorityBit == r3[r2r3SpecialBit])
+		if (majorityBit == r3[10])
 		{
 			int xorResult = r3[7] ^ r3[20] ^ r3[21] ^ r3[22];
 			for (int j = sizeof(r3) - 1; j > 0; j--)
@@ -194,12 +175,12 @@ void A51Cipher::phaseTwo()
 			r3[0] = xorResult;
 		}
 	}
-	
+
 	for (int i = 0; i < 228; i++)
 	{
-		bool majorityBit = ((byte)r1[r1SpecialBit] + (byte)r2[r2r3SpecialBit] + (byte)r3[r2r3SpecialBit]) >= 2 ? true : false;
+		bool majorityBit = ((byte)r1[8] + (byte)r2[10] + (byte)r3[10]) >= 2 ? true : false;
 
-		if (majorityBit == r1[r1SpecialBit])
+		if (majorityBit == r1[8])
 		{
 			int xorResult = r1[13] ^ r1[16] ^ r1[17] ^ r1[18];
 			for (int j = sizeof(r1) - 1; j > 0; j--)
@@ -209,7 +190,7 @@ void A51Cipher::phaseTwo()
 			r1[0] = xorResult;
 		}
 
-		if (majorityBit == r2[r2r3SpecialBit])
+		if (majorityBit == r2[10])
 		{
 			int xorResult = r2[20] ^ r2[21];
 			for (int j = sizeof(r2) - 1; j > 0; j--)
@@ -219,7 +200,7 @@ void A51Cipher::phaseTwo()
 			r2[0] = xorResult;
 		}
 
-		if (majorityBit == r3[r2r3SpecialBit])
+		if (majorityBit == r3[10])
 		{
 			int xorResult = r3[7] ^ r3[20] ^ r3[21] ^ r3[22];
 			for (int j = sizeof(r3) - 1; j > 0; j--)
@@ -234,15 +215,20 @@ void A51Cipher::phaseTwo()
 		//Serial.print(tobeAddedToKeystream ? '1' : '0');
 		cipherKey[i] = tobeAddedToKeystream;
 	}
+
+	keyAndFrameInitialized = true;
 }
 
 bool* A51Cipher::encryptMessage(char* message)
 {
 	if (!cipherKeyGenerated)
 	{
+#ifdef VISUAL_STUDIO
+		throw std::runtime_error("Cipher key not generated");
+#else
 		bool res[1] = { false };
 		return res;
-		//throw std::runtime_error("Cipher key not generated");
+#endif // VISUAL_STUDIO
 	}
 
 	size_t len = strlen(message);
@@ -269,8 +255,11 @@ void A51Cipher::decryptMessage(bool encryptedMessage[], uint8_t encryptedMessage
 {
 	if (!cipherKeyGenerated)
 	{
+#ifdef VISUAL_STUDIO
+		throw std::runtime_error("Cipher key not generated");
+#else
 		return;
-		//throw std::runtime_error("Cipher key not generated");
+#endif // VISUAL_STUDIO
 	}
 
 	for (int i = 0; i < encryptedMessageSize; i++)
