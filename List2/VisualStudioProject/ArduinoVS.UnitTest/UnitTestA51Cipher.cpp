@@ -77,6 +77,29 @@ namespace ArduinoVSUnitTest
 			Assert::IsTrue(same, L"Original and decrypted messages are not the same");
 		}
 
+		TEST_METHOD(Message_Is_Encrypted_Correctly_Using_Ints)
+		{
+			A51Cipher cipher;
+			cipher.createCipherKey();
+
+			char originalMessage[] = "Hello my friends";
+			uint8_t* encryptedMessage = cipher.encryptMessage2(originalMessage);
+
+			char decryptedMessage[17];
+			cipher.decryptMessage(encryptedMessage, strlen(originalMessage), decryptedMessage);
+
+			bool same = true;
+			for (int i = 0; i < 16; i++)
+			{
+				if (originalMessage[i] != decryptedMessage[i])
+				{
+					same = false;
+					break;
+				}
+			}
+			Assert::IsTrue(same, L"Original and decrypted messages are not the same");
+		}
+
 		TEST_METHOD(Throws_Exception_When_Encrypting_Message_If_CipherKey_Is_Not_Generated)
 		{
 			auto func = [this] {EncryptBeforeCreatingCypherKey(); };

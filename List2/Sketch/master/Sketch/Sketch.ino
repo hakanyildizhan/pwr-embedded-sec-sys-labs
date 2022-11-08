@@ -22,7 +22,6 @@ void loop()
         if (cipherKeyIsSent) 
         {
             commLib.beginListen();
-            //delay(1000);
         }
     }
     else
@@ -30,17 +29,15 @@ void loop()
         commLib.communicationLoop();
         if (commLib.bufferMessageFromPCSize > 0)
         {
-            bool* encryptedMessage = cipherLib.encryptMessage(commLib.bufferMessageFromPC);
+            uint8_t* encryptedMessage = cipherLib.encryptMessage2(commLib.bufferMessageFromPC);
             commLib.sendBinary(encryptedMessage);
         }
         if (commLib.bufferMessageFromIRSize > 0)
         {
-            char* message = (char*)malloc(sizeof(char) * (commLib.bufferMessageFromIRSize+1));
-            cipherLib.decryptMessage(commLib.bufferMessageFromIR, commLib.bufferMessageFromIRSize, message);
-            Serial.println(message);
-            commLib.isReceiving = false;
-            free(message);
+            cipherLib.decryptMessage(commLib.buffer, commLib.bufferMessageFromIRSize);
+            cipherLib.freeBuffer();
             commLib.freeBufferMessageFromIR();
+            commLib.beginListen();
         }
     }
 }

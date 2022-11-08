@@ -50,6 +50,7 @@ public:
 	STIR(int irReceivePin, int irSendPin);
 	STIR(uint8_t listeningLEDPin, uint8_t receivingLEDPin, uint8_t sendingLEDPin, uint8_t irReceivePin, uint8_t irSendPin, bool isMaster);
 	void sendBinary(bool binaryMessage[]);
+	void sendBinary(uint8_t encryptedMessage[]);
 	void communicationLoop();
 	void beginListen();
 	bool listenForCipherKey();
@@ -59,8 +60,9 @@ public:
 	bool* convertCommandSequenceToBin(uint8_t commandSequence[], size_t size);
 	char bufferMessageFromPC[150];
 	bool* bufferMessageFromIR;
+	//uint8_t* bufferMessageFromIRInt;
 	uint8_t bufferCipherKey[32];
-	bool cipherKey[228];
+	uint8_t cipherKeyInt[28];
 	uint8_t bufferMessageFromPCSize;
 	uint8_t bufferMessageFromIRSize;
 	void freeBufferMessageFromPC();
@@ -74,8 +76,7 @@ public:
 	void setState(State newState);
 	uint8_t role;
 	bool messageReceived;
-	bool isReceiving = false;
-	bool isSending;
+	uint8_t buffer[100];
 private:
 	State state;
 	uint8_t pinWaiting;
@@ -86,11 +87,11 @@ private:
 	bool serialStarted;
 	bool irListenStarted;
 	bool irTransmitStarted;
-	uint8_t* buffer;
+	
 	uint8_t bufferSize;
 	void sendFinishSequence();
 	void sendAcknowledgedSequence();
-	bool waitForAcknowledgedSequence();
+	bool waitForAcknowledgedSequence(bool isMessage);
 	void buildCipherKey();
 	uint8_t intpow(uint8_t x);
 	const static uint16_t NEC_BUFFER[3];
