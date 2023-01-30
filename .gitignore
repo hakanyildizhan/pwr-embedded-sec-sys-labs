@@ -15,6 +15,7 @@
 # Visual Studio Files
 .vs
 bin
+obj
 Debug
 Release
 *.suo
@@ -27,3 +28,4 @@ ipch
 # Misc
 *.bak
 /List2/VisualStudioProject/ArduinoVS.UnitTest/ArduinoVS.UnitTest.vcxproj.user
+.idea
