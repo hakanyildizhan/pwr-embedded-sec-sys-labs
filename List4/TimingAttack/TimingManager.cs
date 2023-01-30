@@ -16,11 +16,6 @@ public class TimingManager
         _digitTimings = new Dictionary<int, long>();
     }
 
-    public void StartTiming()
-    {
-        _stopwatch.Start();
-    }
-    
     public void Received(string message)
     {
         StopTiming();
@@ -42,30 +37,19 @@ public class TimingManager
         }
     }
 
-    public string GetNext()
-    {
-        return _correctDigits 
-               + (_nextDigit)
-               + new string('0', PIN_DIGITS - _correctDigits.Length - 1);
-    }
+    public string GetNext() 
+        => _correctDigits 
+           + (_nextDigit)
+           + new string('0', PIN_DIGITS - _correctDigits.Length - 1);
 
-    public string GetCurrentPIN()
-    {
-        return _correctDigits + _nextDigit;
-    }
+    public string GetCurrentPIN() => _correctDigits + _nextDigit;
 
-    private static int FindCorrectIndex(IList<long> timings)
-    {
-        return timings.IndexOf(timings.MaxBy(t => t));
-    }
-
-    private void StopTiming()
-    {
-        _stopwatch.Stop();
-    }
+    public void StartTiming() => _stopwatch.Start();
     
-    private void ResetTiming()
-    {
-        _stopwatch.Reset();
-    }
+    private static int FindCorrectIndex(IList<long> timings) 
+        => timings.IndexOf(timings.MaxBy(t => t));
+    
+    private void StopTiming() => _stopwatch.Stop();
+
+    private void ResetTiming() => _stopwatch.Reset();
 }
