@@ -11,12 +11,9 @@ namespace TimingAttack
         {
             Console.Write("Enter port number: ");
             var portNumber = Convert.ToInt32(Console.ReadLine());
-            
             port = new SerialPort($"COM{portNumber}",
                 9600, Parity.None, 8, StopBits.One);
-            
             port.DataReceived += new SerialDataReceivedEventHandler(port_DataReceived);
-
             port.Open();
 
             while (port.IsOpen)
